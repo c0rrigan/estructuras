@@ -2,10 +2,7 @@ extern int PRES;
 extern int verbose;
 typedef struct Matriz{
     int m,n;
-    union{
-        float **fdata;
-        int **idata;
-    }data;
+    float **data;
 }Matriz;
     
 Matriz *matriz(char*);

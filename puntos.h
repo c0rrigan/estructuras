@@ -1,1 +1,0 @@
-void centroides(void);
