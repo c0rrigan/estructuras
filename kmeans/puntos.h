@@ -1,1 +1,1 @@
-void centroides(Matriz*);
+void centroides(Matriz*,int);

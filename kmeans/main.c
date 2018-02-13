@@ -4,7 +4,7 @@
 #include "load.h"
 #include "puntos.h"
 
-int CENTROIDES=2;
+int CENTROIDES=3;
 char *s = "file.csv";
 int main(int argc,char *argv[]){
     //Estructura para argumentos -v
@@ -27,7 +27,7 @@ int main(int argc,char *argv[]){
         printf("\n");
     }
 
-    centroides(mtr);
+    centroides(mtr,3);
 
     return 0;
 }
