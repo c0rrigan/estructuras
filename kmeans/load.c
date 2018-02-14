@@ -38,17 +38,9 @@ Matriz *matriz(char *s){
         }
     }
     rewind(f);
-    printf("m=%d,n=%d\n",m,n);
     mtr->m=m;
     mtr->n=n;
     mtr->data=crea_matriz(PRES,m,n,f);
-    //int a,b;
-    //for(a=0;a<m;a++){
-    //    for(b=0;b<n;b++){
-    //        printf("%.3f\t",fdata[a][b]);
-    //    }
-    //    printf("\n");
-    //}
     return mtr;
 }
 /**
@@ -60,14 +52,12 @@ float **crea_matriz(int PRES,int m,int n,FILE *f){
     char c;
     char *buffer=(char *)malloc(sizeof(char)*BUFFER);
     float **mtr=(float**)iniciar_fmatriz(m,n);
-    //printf("Press on\n");
     while((c=getc(f))!=EOF){
         if(c!='\n'){
             if(c!=','){
                 buffer[k++]=c;
             }else{
                 buffer[k]='\0';
-                //printf("%s | i:%d,j:%d\n",buffer,i,j);
                 if(PRES)
                     mtr[i][j++]=(float)atof(buffer);
                 else
@@ -77,7 +67,6 @@ float **crea_matriz(int PRES,int m,int n,FILE *f){
             }
         }else{
             buffer[k]='\0';
-            //printf("%s | i:%d,j:%d\n",buffer,i,j);
             if(PRES)
                 mtr[i][j++]=(float)atof(buffer);
             else
