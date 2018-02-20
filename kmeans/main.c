@@ -4,7 +4,7 @@
 #include "load.h"
 #include "puntos.h"
 
-int CENTROIDES=2;
+int CENTROIDES=3;
 float err=1e-6;
 char *s = "datos.csv";
 int main(int argc,char *argv[]){
