@@ -1,3 +1,8 @@
+#define KRED  "\x1B[31m"
+#define KNRM  "\x1B[0m"
+#define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
 #include <stdio.h>
 using namespace std;
 class Nodo{
@@ -25,7 +30,7 @@ void Pila::insertar(int datos){
 }
 void Pila::extraer(){
     if(pos->anterior==pos){
-        printf("No hay elementos\n");
+        printf("%sNo hay elementos%s\n",KRED,KNRM);
     }else{
         printf("Extrayendo:%d\n",pos->datos);
         aux=pos;
@@ -35,10 +40,11 @@ void Pila::extraer(){
     }
 }
 void Pila::mostrar(){
-    if(pos->anterior==pos)
-        printf("No hay elementos\n");
-    else
+    if(pos->anterior==pos){
+        printf(KRED"No hay elementos\n" KNRM);
+    }else{
         printf("Mostrar:%d\n",pos->datos);
+    }
 }
 int main(){
     int continuar = 1;
