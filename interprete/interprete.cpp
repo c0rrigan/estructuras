@@ -1,5 +1,9 @@
 #include <iostream>
 #include <ctype.h>
+#include "nodo.h"
+#include "cola.h"
+#include "pila.h"
+#include "lista.h"
 extern "C"{
     #include "datos.h"
 }
@@ -64,12 +68,6 @@ void asignar(char **s){
     mayusculas(s[0]);
 }
 int main(){
-    cargar_datos();
-    int i = **(OPH-1);
-    printf("leidos:%d\n",i);
-    unsigned char s[] = "clear";
-    printf("palabra:%s\n",s);
-    printf("id:%d\n",busc_op(s,OPH));
-    printf("operación:%s\n",OP[busc_op(s,OPH)]);
+    //cargar_datos();
     return 0;
 }
