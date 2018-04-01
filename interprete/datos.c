@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include "datos.h"
 #define BUFF_C 90 //Buffer de carcteres
 #define BUFF_D 30 //Buffer de definiciones por grupo
 /* INSERTAR : 616
@@ -10,7 +11,7 @@
  * ORDENAR : 523
  * ANEXAR : 447
  */
-char *OP[]={"INSERTAR","MOSTRAR","ANEXAR","ORDENAR","EXTRAER"};
+char *OP[]={"INSERTAR","MOSTRAR","ANEXAR","ORDENAR","EXTRAER","PROPIEDAD","LIMPIAR"};
 unsigned int **OPH;
 typedef enum {INSERTAR=2,MOSTRAR,ANEXAR,ORDENAR,EXTRAER} OP_IND;
 
@@ -37,8 +38,8 @@ int cmp(const void *a,const void *b){
     return v_a[0] - v_b[0];
 }
 /*Función hash simple*/
-unsigned int hash(char *s){
-    unsigned int i,sum;
+unsigned int hash(unsigned char *s){
+    int i,sum;
     for(i=0,sum=0;s[i]!='\0';i++)
         sum+=s[i];
     return sum;
@@ -65,9 +66,11 @@ int bb(int h,int n,int q,unsigned int **m){
 }
 /*Funcion que retorna el tipo de operación que tiene cierta palabra
  * dado su valor resultado de la función hash()*/
-int busc_op(unsigned int hash,unsigned int **tab){
-    int p = bb(hash,0,**(tab-1)-1,tab);
-    return (**(tab+p)==hash)?tab[p][1]:-1;
+int busc_op(unsigned char *s,unsigned int **tab){
+    mayusculas(s);
+    int h = hash(s);
+    int p = bb(h,0,**(tab-1)-1,tab);
+    return (**(tab+p)==h)?tab[p][1]:-1;
 }
 /*Función que guarda la tabla de hash de operaciones OPH en el archivo
  * tabla*/
@@ -75,7 +78,7 @@ int guardar_tab(){
     FILE *o = fopen("tabla","w+");
     int n = **(OPH-1);
     fwrite(OPH[-1],sizeof(int),1,o);
-    for(;n >= 0;n--){
+    for(n--;n >= 0;n--){
         fwrite(&(OPH[n][0]),sizeof(int),1,o);
         fwrite(&(OPH[n][1]),sizeof(int),1,o);
         fputc('\n',o);
@@ -95,15 +98,22 @@ unsigned int **tab_prim(){
     qsort(mtr,mtr[-1][0],sizeof(mtr[0]),cmp);
     return mtr;
 }
+/*Función que agrega un nuevo arreglo de 2 elementos unsigned int* a 't' 
+ *, siendo el primer elemento la variable 'hash' y el segundo 'op', en
+ * caso de que el número de elementos (**t) sea mayor al buffer de cadenas
+ * (BUFF_D), se agrega mas espacio al arreglo 't'*/
 void nuevo_reg(unsigned int hash,unsigned int op,unsigned int **t){
-    if(**t >= BUFF_D){
-        //t = (unsigned int**)realloc(t,n*sizeof(int*));
-    }
     int n = ++(**t);
+    if(n == BUFF_D){
+        t = (unsigned int**)realloc(t,(n+BUFF_D)*sizeof(int*));
+    }
     t[n-1] = (int*)calloc(2,sizeof(int));
     t[n-1][0]=hash;
     t[n-1][1]=op;
 }
+/*Función que ingresa las definiciones que se encuentran entre llaves
+ * de cada operación (OP) en el archivo 'config' y las reune con las 
+ * definiciones básicas contenidas en OPH*/
 unsigned int **ingr_regs(FILE *f,unsigned int op,unsigned int **tab){
     char c;int i=0;
     unsigned char *buff = (unsigned char *)calloc(BUFF_C,sizeof(char));
@@ -113,7 +123,6 @@ unsigned int **ingr_regs(FILE *f,unsigned int op,unsigned int **tab){
         if(buff[i-1]==','){
             buff[i-1] = '\0';
             mayusculas(buff);
-            printf("%s : %d\n",buff,hash(buff));
             nuevo_reg(hash(buff),op,tab);
             i=0;
             memset(buff,0,BUFF_C*sizeof(*buff));
@@ -122,7 +131,6 @@ unsigned int **ingr_regs(FILE *f,unsigned int op,unsigned int **tab){
     //Utilizar la cadena que se queda en el buffer al acabar
     buff[i-1] = '\0';
     mayusculas(buff);
-    printf("%s : %d\n",buff,hash(buff));
     nuevo_reg(hash(buff),op,tab);
 }
 /*Combina las definiciones globales de OPH con las resultantes en el
@@ -153,25 +161,24 @@ unsigned int **tab_conf(FILE *f,unsigned int **tab_base){
             if(buff[i-1]=='{'){
                 buff[i-1]='\0';
                 int id_op;
-                if((id_op = busc_op(hash(buff),OPH))>-1){
-                    printf("Grupo:%s\n",buff);
+                if((id_op = busc_op(buff,OPH))>-1){
                     ingr_regs(f,id_op,tab_temp);
                     i=0;
                     memset(buff,0,BUFF_C*sizeof(*buff));
                 }
             }
         }
-    printf("!!!!%d\n",**tab_temp);
     combinar_conf(OPH,tab_temp);
     tab_temp = tab_temp+1;
     //Al final hay que ordenar todos los registros de la matriz
     qsort(tab_temp,tab_temp[-1][0],sizeof(tab_temp[0]),cmp);
     return tab_temp;
 }
+/*Carga los datos del archivo 't' a una matriz de dos dimensiones del
+ * tamaño correspondiente al encontrado en el entero de 4 bytes al 
+ * inicio del archivo*/
 unsigned int **leer_tabla(FILE *t){
     int i;unsigned int **tab;
-    //Lee el número de datos que contiene la tabla de definiciones,
-    //el cual esta en el primer byte del archivo
     fread(&i,sizeof(int),1,t);
     tab = n_matr(i,2);
     i--;
@@ -182,6 +189,8 @@ unsigned int **leer_tabla(FILE *t){
     }
     return tab;
 }
+/*Genera la tabla, primero con las definicinoes básicas en OP y luego, dependiendo 
+ * de la existencia del archivo 'config', agrega las definiciones ahí encontradas*/
 unsigned int **generar_tabla(){
     FILE *f;
     unsigned int **tab = tab_prim();
@@ -191,6 +200,8 @@ unsigned int **generar_tabla(){
     }
     return tab;
 }
+/*Carga los datos que se encuetren en el archivo 'tabla' y en el caso de no existir
+ * tal archivo, lo crea*/
 unsigned int cargar_datos(){
     FILE *f;
     if((f=fopen("tabla","r+"))){
@@ -203,24 +214,4 @@ unsigned int cargar_datos(){
         guardar_tab();
         return **(OPH-1);
     }
-}
-
-int main(){
-    //generar_tabla();
-    //unsigned int **t = leer_tabla();
-    cargar_datos();
-    int i = **(OPH-1);
-    printf("leidos:%d\n",i);
-    char s[] = "SACAR";
-    printf("palabra:%s\n",s);
-    mayusculas(s);
-    printf("mayus:%s\n",s);
-    printf("hash:%d",hash(s));
-    printf("id:%d\n",busc_op(hash(s),OPH));
-    printf("operación:%s\n",OP[busc_op(hash(s),OPH)]);
-    //for(i--;i>=0;i--){
-    //    printf("%d | %d | %d \n",i,OPH[i][0],OPH[i][1]);
-    //}
-    //guardar_tab();
-    return 0;
 }
