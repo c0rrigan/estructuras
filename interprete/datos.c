@@ -11,10 +11,8 @@
  * ORDENAR : 523
  * ANEXAR : 447
  */
-char *OP[]={"INSERTAR","MOSTRAR","ANEXAR","ORDENAR","EXTRAER","PROPIEDAD","LIMPIAR"};
+char *OP[]={"INSERTAR","MOSTRAR","EXTRAER","ANEXAR","ORDENAR","OBJETOS","UNIDADES"};
 unsigned int **OPH;
-typedef enum {INSERTAR=2,MOSTRAR,ANEXAR,ORDENAR,EXTRAER} OP_IND;
-
 /*Función que cambia una cadena 's' con terminador '\0' a letras mayusculas*/
 void mayusculas(char *s){
     while(*s!='\0')
@@ -40,8 +38,9 @@ int cmp(const void *a,const void *b){
 /*Función hash simple*/
 unsigned int hash(unsigned char *s){
     int i,sum;
-    for(i=0,sum=0;s[i]!='\0';i++)
+    for(i=0,sum=0;s[i]!='\0';i++){
         sum+=s[i];
+    }
     return sum;
 }
 /*Función para contar caracteres*/
@@ -150,7 +149,7 @@ void combinar_conf(unsigned int **oph,unsigned int **conf){
 /*Función quee agrega las registros de archivo 'conf' al arreglo
  * global OPH*/
 unsigned int **tab_conf(FILE *f,unsigned int **tab_base){
-    char c;int i=0;
+    int i=0;
     char *buff = (char *)calloc(BUFF_C,sizeof(char));
     unsigned int **tab_temp = (unsigned int**)calloc(BUFF_D,sizeof(unsigned int*));
     *tab_temp = (unsigned int*)calloc(1,sizeof(int));
@@ -163,9 +162,13 @@ unsigned int **tab_conf(FILE *f,unsigned int **tab_base){
                 int id_op;
                 if((id_op = busc_op(buff,OPH))>-1){
                     ingr_regs(f,id_op,tab_temp);
-                    i=0;
-                    memset(buff,0,BUFF_C*sizeof(*buff));
+                }else{
+                //Ignorar las definiciones contenidas en corchetes
+                    char c;
+                    while((c=getc(f))!='}');
                 }
+                i=0;
+                memset(buff,0,BUFF_C*sizeof(*buff));
             }
         }
     combinar_conf(OPH,tab_temp);
