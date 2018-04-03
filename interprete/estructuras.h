@@ -7,4 +7,5 @@ char *mostrar(int,int);
 int insertar(int,int,char*);
 int borrar(int,int);
 int ins_n(int,int,int,char**);
+int anexar(int,int,int,int);
 #endif

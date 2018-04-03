@@ -18,14 +18,17 @@ int nuevo_obj(int obj){
     switch(obj){
         case PILA:{
             pilas.insert(pilas.end(),new Pila());
+            printf("Pila #%d creada\n",pilas.size());
         }
         break;
         case COLA:{
             colas.insert(colas.end(),new Cola());
+            printf("Cola #%d creada\n",colas.size());
         }
         break;
         case LISTA:{
             listas.insert(listas.end(),new Lista());
+            printf("Lista #%d creada\n",listas.size());
         }
         break;
     }
@@ -102,6 +105,14 @@ int borrar(int obj,int id_obj){
             break;
         }
     }
+}
+int anexar(int obj1,int id_obj1,int obj2,int id_obj2){
+    char *temp;
+    while((temp = extraer(obj1,id_obj1))!=NULL){
+        printf("extraer :%s\n",temp);
+        insertar(obj2,id_obj2,temp);
+    }
+
 }
 //int main(){
 //    char s[] = "tigre";

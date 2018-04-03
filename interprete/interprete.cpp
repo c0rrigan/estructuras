@@ -7,7 +7,7 @@ extern "C"{
 #include "datos.h"
 }
 #define BUFF_C 16
-enum {INSERTAR,MOSTRAR,EXTRAER,ANEXAR,ORDENAR,OBJETOS,UNIDADES} OP_ID;
+enum {INSERTAR,MOSTRAR,EXTRAER,ANEXAR,ORDENAR,OBJETOS,UNIDADES,LIMPIAR,CREAR,SALIR} OP_ID;
 using namespace std;
 /*Generar arreglo de enteros 'n' enteros con el tamaño en *(n-1)*/
 unsigned char **n_arr(int n){
@@ -17,26 +17,31 @@ unsigned char **n_arr(int n){
     return nums;
 }
 unsigned char **gen_nums(int n,int tipo,int orden){
-    int aumento = (tipo) ? 2 : 3;
+    int aumento = 2;
     unsigned char **nums = n_arr(n);
     int temp;
     if(orden){
-        for(--n;n >= 0;n--){
-            temp = ((temp = rand()%10000)%aumento==0)?temp:temp-temp%aumento;
-            sprintf((char*)*(nums+n),"%d",temp);
+        if(tipo){
+            for(--n;n >= 0;n--){
+                temp = ((temp = rand()%10000)%aumento==0)?temp:temp+1;
+                sprintf((char*)*(nums+n),"%d",temp);
+            }
+        }else{
+            for(--n;n >= 0;n--){
+                temp = ((temp = rand()%10000)%aumento==1)?temp:temp+1;
+                sprintf((char*)*(nums+n),"%d",temp);
+            }
         }
     }else{
         if(tipo){
-            temp = ((temp = rand()%10000)%aumento==0)?temp:temp-temp%aumento;
+            temp = ((temp = rand()%10000)%aumento==0)?temp:temp-1;
             for(--n;n >= 0;n--){
                 temp += aumento;
                 sprintf((char*)*(nums+n),"%d",temp);
             }
         }else{
-            temp = ((temp = rand()%10000)%aumento==0)?temp:temp-temp%aumento;
-            temp = (temp-1)/2;
             for(--n;n >= 0;n--){
-                temp = (2*(temp)+1)%10000;
+                temp = ((temp = rand()%10000)%aumento==1)?temp:temp+1;
                 sprintf((char*)*(nums+n),"%d",temp);
             }
         }
@@ -78,7 +83,7 @@ int insertar_simple(unsigned char **args,int obj,int id_obj){
             break;
     }
     printf("insertar número%s en obj:%d id:%d\n",args[n],obj,id_obj);
-    //insertar(obj,id_obj,(char*)args[n]);
+    insertar(obj,id_obj,(char*)args[n]);
 }
 //Retorna el tipo de objeto que tiene la cadena,
 //notar que ya no debe de contar con el identificador al final
@@ -92,6 +97,20 @@ int busc_obj(unsigned char **args){
         else if(strcmp((char*)args[**(args-1)-1],"PILA")==0)
             obj = 2;
         else
+            obj = 3;
+    }
+    return obj;
+}
+int busc_obj(unsigned char *arg){
+    /*Desconocido(0),Lista(1),Pila(2),Cola(3)*/
+    int obj = 0;
+    mayusculas((char*)arg);
+    if(busc_op(arg,OPH)==OBJETOS){
+        if(strcmp((char*)arg,"LISTA")==0)
+            obj = 1;
+        else if(strcmp((char*)arg,"PILA")==0)
+            obj = 2;
+        else if(strcmp((char*)arg,"COLA")==0)
             obj = 3;
     }
     return obj;
@@ -113,7 +132,7 @@ int asig_ins(unsigned char **args,int in){
                 if(obj&&id_o)
                     //printf("insert simple obj:%d, id_o:%d\n",obj,id_o);
                     insertar_simple(args,obj,id_o);
-                    break;
+                break;
             }
         }
     }
@@ -147,11 +166,15 @@ int mostrar_tipo(int obj,int id_obj,int tipo){
     char *s;
     if(tipo){
         while((s = extraer(obj,id_obj))!=NULL){
-            printf("%s\n",s);
-            //temp = atoi(s);
-            
-            //if(temp%2==0)
-            //    printf("%d\n",temp);
+            temp = atoi(s);
+            if(temp%2==0)
+                printf("%d\n",temp);
+        }
+    }else{
+        while((s = extraer(obj,id_obj))!=NULL){
+            temp = atoi(s);
+            if(temp%2==1)
+                printf("%d\n",temp);
         }
     }
 }
@@ -161,7 +184,7 @@ int mostrar(unsigned char **args){
     if(**(args-1) > 1 && **(args-1) <= 3){
         if(id_o&&obj){
             printf("mostrar obj:%d,id:%d\n",obj,id_o);
-            //mostrar(obj,id_o);
+            printf("mostrar:%s\n",mostrar(obj,id_o));
         }
     }else{
         int n;
@@ -177,27 +200,85 @@ int mostrar(unsigned char **args){
         mostrar_tipo(obj,id_o,tipo);
     }
 }
+int anexar(unsigned char **args){
+    int i;
+    int ids[] = {0,0};int j = 0;
+    int objs[] = {0,0};int k = 0;
+    for(i = 1;i < **(args-1);i++){
+        if((ids[j] = rem_nums(args[i]))>0){
+            if(objs[k] = busc_obj(args[i])){
+                j++;k++;
+            }
+        }
+    }
+    if(objs[0] && objs[1]){
+        printf("anexar obj:%d id:%d a obj:%d id:%d",objs[0],ids[0],objs[1],ids[1]);
+        anexar(objs[0],ids[0],objs[1],ids[1]);
+    }
+}
+int ordenar(unsigned char **args){
+    int i;
+    int id_o = rem_nums(args[**(args-1)-1]);
+    int obj = busc_obj(args);
+    int orden[] = {0,0};
+    if(id_o && obj){
+        //ascendente(0),descendente(1)
+        int j = 0;
+        for(i = 1;i < **(args-1)-1;i++){
+            mayusculas((char*)args[i]);
+            if(strcmp((char*)args[i],"MAYOR") == 0)
+                orden[j++] = 3;
+            if(strcmp((char*)args[i],"MENOR") == 0)
+                orden[j++] = 2;
+        }
+        if(orden[0] && orden[1] && orden[0]!=orden[1])
+            printf("imprimir de %d a %d obj:%d,id:%d\n",orden[0],orden[1],obj,id_o);
+    }
+}
+int extraer(unsigned char **args){
+    int i;
+    int id_o = rem_nums(args[**(args-1)-1]);
+    int obj = busc_obj(args);
+    if(id_o && obj){
+        printf("Extraer:%s\n",extraer(obj,id_o));
+    }
+}
+int crear(unsigned char **args){
+    int i;
+    int id_o = rem_nums(args[**(args-1)-1]);
+    int obj = busc_obj(args);
+    if(obj){
+        printf("Crear:%d\n",obj);
+        nuevo_obj(obj);
+    }
+}
 void asignar(unsigned char **s){
     int n = busc_op(s[0],OPH);
     switch(n){
-        case 0: insertar(s); break;
-        case 1: mostrar(s); break;
-        //case 2: //extrae break;
-        //case 3: //anexa break;
-        //case 4: //ordena break;
+        case INSERTAR: insertar(s); break;
+        case MOSTRAR: mostrar(s); break;
+        case EXTRAER: extraer(s); break;
+        case ANEXAR: anexar(s); break;
+        case ORDENAR: ordenar(s); break;
+        case CREAR: crear(s); break;
+        case LIMPIAR: printf("%s\n",s[0]); break;
+        case SALIR: exit(0); break;
     }
 }
 
 int main(){
     cargar_datos();
     //unsigned char s3[] = "mostrar pila1";
-    nuevo_obj(1);
-    unsigned char s[] = "insertar 12 numeros impares consecutivos en la lista1";
-    unsigned char s3[] = "mostrar los números pares de la lista1";
-    //unsigned char s2[] = "insertar en lista1 15 números aleatorios";
+    //!!!Revisar generador de nums
+    //implementar casos de números aleatorios sin modificador
+    unsigned char s[] = "salir";
+    unsigned char s2[] = "insertar 5.67 en lista1";
+    unsigned char s3[] = "mostrar la lista1"; 
     unsigned char **sp = partir(s);
     asignar(sp);
-    sp = partir(s3);
-    asignar(sp);
+  //  sp = partir(s2);
+  //  asignar(sp);
+  //  sp = partir(s3);
+  //  asignar(sp);
     return 0;
 }
