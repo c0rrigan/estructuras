@@ -1,9 +1,11 @@
 #include <cstdio>
+#include <cstring>
+#include <cstdlib>
 using namespace std;
 #include "nodo.h"
 #include "lista.h"
 //Nodo::Nodo(char *s){val = s;rel = NULL;}
-Lista::Lista(){cabeza=NULL;aux=NULL;aux2=NULL;}
+//Lista::Lista(){cabeza=NULL;aux=NULL;aux2=NULL;}
 
 void Lista::insertar(char *a){
     aux2 = new Nodo(a);
@@ -32,21 +34,23 @@ void Lista::mostrarTodo(){
     }
 }
 //considerar caso con cabeza=NULL
-void Lista::extraer(){
+char *Lista::extraer(){
     if(!cabeza){
-        printf("Vacio\n");
+        return NULL;
     }else{
-        printf("Extraer:%s\n",cabeza->val);
+        char *tmp = (char*)malloc((strlen(cabeza->val)+1)*sizeof(char));
+        strcpy(tmp,cabeza->val);
         aux = cabeza;
         cabeza = cabeza->rel;
         delete(aux);
+        return tmp;
     }
 }
-void Lista::mostrar(){
+char *Lista::mostrar(){
     if(!cabeza){
-        printf("Vacio\n");
+        return NULL;
     }else{
-        printf("Mostrar:%s\n",cabeza->val);
+        return cabeza->val;
     }
 }
 //int main(){

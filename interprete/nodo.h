@@ -4,7 +4,7 @@ class Nodo{
     public:
         char *val;
         Nodo *rel;
-        Nodo(char*);
-        Nodo();
+        Nodo(){val = NULL;rel = NULL;}
+        Nodo(char *s){val = s;rel = NULL;}
 };
 #endif

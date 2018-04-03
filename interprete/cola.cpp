@@ -1,4 +1,6 @@
 #include <cstdio>
+#include <cstring>
+#include <cstdlib>
 using namespace std;
 #include "nodo.h"
 #include "cola.h"
@@ -6,11 +8,6 @@ using namespace std;
 //    val = s;
 //    rel = NULL;
 //}
-Cola::Cola(){
-    entrada=NULL;
-    salida=NULL;
-    aux=NULL;
-}
 void Cola::insertar(char *val){
     aux=new Nodo(val);
     if(!salida){
@@ -23,21 +20,23 @@ void Cola::insertar(char *val){
     entrada=aux;
     printf("Insertar:%s\n",val);
 }
-void Cola::extraer(){
+char *Cola::extraer(){
     if(salida){
-        printf("Extraer :%s\n",salida->val);
+        char *tmp = (char *)malloc((strlen(salida->val)+1)*sizeof(char));
+        strcpy(tmp,salida->val);
         aux=salida->rel;
         delete(salida);
         salida=aux;
+        return tmp;
     }else{
-        printf("Cola vacia\n");
+        return (char*)"No hay elementos";
     }
 }
-void Cola::mostrar(){
+char *Cola::mostrar(){
     if(salida)
-        printf("Mostrar :%s\n",salida->val);
+        return salida->val;
     else
-        printf("Vacio\n");
+        return (char*)"No hay elementos";
 }
 //int main(){
 //    Cola c;

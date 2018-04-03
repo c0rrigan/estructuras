@@ -43,10 +43,25 @@ unsigned char **partir(unsigned char *s){
  * o decimal con notación científica e.g. 3e-4 */
 int esnum(unsigned char *s){
     while(*s!='\0'){
-        if((*s!='e' && *s!='-') && (*s > '9' || *s < '0')){
+        if((*s!='e' && *s!='-' && *s!='.') && (*s > '9' || *s < '0')){
             return 0;
         }
         s++;
     }
     return 1;
 }
+/*Regresa la secuencía de números que se encuetra dentro
+ * de la cadena *s, de existir alguna*/
+int rem_nums(unsigned char *s){
+    int i=0;
+    char buff[8];//Buffer de digitos
+    while(*s!='\0'){
+        if(*s>='0' && *s <= '9'){
+            buff[i++] = *s;
+            *s = '\0';
+        }
+        s++;
+    }
+    buff[i]='\0';
+    return (i>0)?atoi(buff):i;
+};

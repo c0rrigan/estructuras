@@ -1,0 +1,6 @@
+INSERTAR{INTRODUCIR,AGREGAR,ingresar}
+MOSTRAR{enseñar,muestra}
+EXTRAER{sacar,quitar,eliminar}
+LIMPIAR{clear,clean,lavar}
+OBJETOS{lista,pila,cola}
+UNIDADES{números,numeros}

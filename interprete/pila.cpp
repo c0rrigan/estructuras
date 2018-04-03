@@ -1,37 +1,40 @@
-#include <stdio.h>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
 using namespace std;
 #include "nodo.h"
 #include "pila.h"
-Nodo::Nodo(char *s){
-    val = s;
-    rel = NULL;
-}
-Nodo::Nodo(){
-    val = NULL;
-    rel = NULL;
-}
+//Nodo::Nodo(char *s){
+//    val = s;
+//    rel = NULL;
+//}
+//Nodo::Nodo(){
+//    val = NULL;
+//    rel = NULL;
+//}
 void Pila::insertar(char *datos){
     aux = new Nodo(datos);
     aux->rel=pos;
     pos=aux;
     printf("Insertado:%s\n",datos);
 }
-void Pila::extraer(){
+char *Pila::extraer(){
     if(pos->rel==pos){
-        printf("No hay elementos\n");
+        return NULL;
     }else{
-        printf("Extrayendo:%s\n",pos->val);
+        char *tmp = (char *)malloc((strlen(pos->val)+1)*sizeof(char));
+        strcpy(tmp,pos->val);
         aux=pos;
         pos=pos->rel;
         delete(aux);
-
+        return tmp; 
     }
 }
-void Pila::mostrar(){
+char *Pila::mostrar(){
     if(pos->rel==pos){
-        printf("No hay elementos\n");
+        return NULL;
     }else{
-        printf("Mostrar:%s\n",pos->val);
+        return pos->val;
     }
 }
 //int main(){

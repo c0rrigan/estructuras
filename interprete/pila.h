@@ -1,5 +1,6 @@
 #ifndef PILA_H
 #define PILA_H
+#include "nodo.h"
 class Pila{
     public:
         Nodo *aux;
@@ -9,7 +10,7 @@ class Pila{
         pos->rel=pos;
     }
     void insertar(char*);
-    void extraer();
-    void mostrar();
+    char *extraer();
+    char *mostrar();
 };
 #endif

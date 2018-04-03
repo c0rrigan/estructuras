@@ -2,14 +2,11 @@
 #include <cstring>
 #include <cstdlib>
 #include "cadenas.h"
-#include "nodo.h"
-#include "cola.h"
-#include "pila.h"
-#include "lista.h"
+#include "estructuras.h"
 extern "C"{
 #include "datos.h"
-#define BUFF_C 16
 }
+#define BUFF_C 16
 enum {INSERTAR,MOSTRAR,EXTRAER,ANEXAR,ORDENAR,OBJETOS,UNIDADES} OP_ID;
 using namespace std;
 /*Generar arreglo de enteros 'n' enteros con el tamaño en *(n-1)*/
@@ -19,21 +16,6 @@ unsigned char **n_arr(int n){
         nums[n] = (unsigned char*)calloc(BUFF_C,sizeof(char));
     return nums;
 }
-/*Regresa la secuencía de números que se encuetra dentro
- * de la cadena *s, de existir alguna*/
-int rem_nums(unsigned char *s){
-    int i=0;
-    char buff[8];//Buffer de digitos
-    while(*s!='\0'){
-        if(*s>='0' && *s <= '9'){
-            buff[i++] = *s;
-            *s = '\0';
-        }
-        s++;
-    }
-    buff[i]='\0';
-    return (i>0)?atoi(buff):i;
-};
 unsigned char **gen_nums(int n,int tipo,int orden){
     int aumento = (tipo) ? 2 : 3;
     unsigned char **nums = n_arr(n);
@@ -44,10 +26,19 @@ unsigned char **gen_nums(int n,int tipo,int orden){
             sprintf((char*)*(nums+n),"%d",temp);
         }
     }else{
-        temp=rand()%10000;
-        for(--n;n >= 0;n--){
-            temp += aumento;
-            sprintf((char*)*(nums+n),"%d",temp);
+        if(tipo){
+            temp = ((temp = rand()%10000)%aumento==0)?temp:temp-temp%aumento;
+            for(--n;n >= 0;n--){
+                temp += aumento;
+                sprintf((char*)*(nums+n),"%d",temp);
+            }
+        }else{
+            temp = ((temp = rand()%10000)%aumento==0)?temp:temp-temp%aumento;
+            temp = (temp-1)/2;
+            for(--n;n >= 0;n--){
+                temp = (2*(temp)+1)%10000;
+                sprintf((char*)*(nums+n),"%d",temp);
+            }
         }
     }
     return nums;
@@ -70,17 +61,24 @@ unsigned char **nums(unsigned char **args,int in,int n){
             continue;
         }
     }
-    printf("numeros\nORDEN:%d ,TIPO:%d",orden,tipo);
+    printf("numeros\nORDEN:%d ,TIPO:%d\n",orden,tipo);
     return gen_nums(n,tipo,orden);
 }
 /*Insertar N número con los modificadores necesarios al objeto*/
 int insertar_n(unsigned char **args,int in,int obj,int id_obj){
     int n = atoi((char*)args[in-1]);
     unsigned char **ins = nums(args,in,n);
-    Lista l;
-    for(--n; n >= 0; n--)
-        l.insertar((char*)*(ins+n));
-    l.mostrarTodo();
+    printf("insertar %d elementos en obj tipo%d id:%d\n",n,obj,id_obj);
+    ins_n(obj,id_obj,n,(char**)ins);
+}
+int insertar_simple(unsigned char **args,int obj,int id_obj){
+    int n;
+    for(n = 0;n < **(args-1); n++){
+        if(esnum(args[n]))
+            break;
+    }
+    printf("insertar número%s en obj:%d id:%d\n",args[n],obj,id_obj);
+    //insertar(obj,id_obj,(char*)args[n]);
 }
 //Retorna el tipo de objeto que tiene la cadena,
 //notar que ya no debe de contar con el identificador al final
@@ -104,14 +102,17 @@ int asig_ins(unsigned char **args,int in){
         if(busc_op(args[in],OPH)==UNIDADES){
             int id_o = rem_nums(args[**(args-1)-1]);
             int obj = busc_obj(args);
-            if(obj)
+            if(obj&&id_o)
                 insertar_n(args,in,obj,id_o);
-                //printf("ins%d elementos #id elem:%d, obj:%d\n",n,ne,id_obj);
             break;
         }else{
             mayusculas((char*)args[in]);
             if(strcmp((char*)args[in],"EN")==0){
-                printf("insert simple");
+                int id_o = rem_nums(args[**(args-1)-1]);
+                int obj = busc_obj(args);
+                if(obj&&id_o)
+                    //printf("insert simple obj:%d, id_o:%d\n",obj,id_o);
+                    insertar_simple(args,obj,id_o);
                     break;
             }
         }
@@ -131,6 +132,9 @@ int insertar(unsigned char **s){
             break;
         }else{
             //Insertar ... obj ...
+            //casos:
+            //-insertar en la lista1 15 números aleatorios
+            //-insertar lista2 en pila1
             if(rem_nums(s[i])){
                 printf("s:%s,pos:%d\n",s[i],i);
                 break;
@@ -138,11 +142,46 @@ int insertar(unsigned char **s){
         }
     }
 }
+int mostrar_tipo(int obj,int id_obj,int tipo){
+    int temp;
+    char *s;
+    if(tipo){
+        while((s = extraer(obj,id_obj))!=NULL){
+            printf("%s\n",s);
+            //temp = atoi(s);
+            
+            //if(temp%2==0)
+            //    printf("%d\n",temp);
+        }
+    }
+}
+int mostrar(unsigned char **args){
+    int id_o = rem_nums(args[**(args-1)-1]);
+    int obj = busc_obj(args);
+    if(**(args-1) > 1 && **(args-1) <= 3){
+        if(id_o&&obj){
+            printf("mostrar obj:%d,id:%d\n",obj,id_o);
+            //mostrar(obj,id_o);
+        }
+    }else{
+        int n;
+        int tipo = 0;//por impar(0),par(1)
+        for(n = 0; n < **(args-1)-1;n++){
+            mayusculas((char*)args[n]);
+            if(strcmp((char*)args[n],"PARES")==0){
+                tipo = 1;
+                break;
+            }
+        }
+        printf("mostrar numeros tipo.%d obj:%d,id:%d\n",tipo,obj,id_o);
+        mostrar_tipo(obj,id_o,tipo);
+    }
+}
 void asignar(unsigned char **s){
     int n = busc_op(s[0],OPH);
     switch(n){
         case 0: insertar(s); break;
-        //case 1: //mostra break;
+        case 1: mostrar(s); break;
         //case 2: //extrae break;
         //case 3: //anexa break;
         //case 4: //ordena break;
@@ -151,9 +190,14 @@ void asignar(unsigned char **s){
 
 int main(){
     cargar_datos();
-    unsigned char s[] = "insertar   2   numeros  en  la lista1";
-    unsigned char s2[] = "insertar en lista1 15 números aleatorios";
+    //unsigned char s3[] = "mostrar pila1";
+    nuevo_obj(1);
+    unsigned char s[] = "insertar 12 numeros impares consecutivos en la lista1";
+    unsigned char s3[] = "mostrar los números pares de la lista1";
+    //unsigned char s2[] = "insertar en lista1 15 números aleatorios";
     unsigned char **sp = partir(s);
+    asignar(sp);
+    sp = partir(s3);
     asignar(sp);
     return 0;
 }
