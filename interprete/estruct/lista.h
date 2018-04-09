@@ -10,7 +10,7 @@ class Lista{
         void insertar(char*);
         char *mostrar();
         char *extraer();
-        //void ordenar();
+        void ordenar(int);
         //void insOrd(int);
         void mostrarTodo();
         int tam();

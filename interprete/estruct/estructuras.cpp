@@ -52,7 +52,7 @@ char *mostrar(int obj,int id_obj){
             break;
             case COLA: return colas[id_obj-1]->mostrar();
             break;
-            case LISTA: return listas[id_obj-1]->mostrar();
+            case LISTA:listas[id_obj-1]->mostrarTodo();return NULL;
             break;
         }
     }

@@ -11,7 +11,7 @@
  * ORDENAR : 523
  * ANEXAR : 447
  */
-char *OP[]={"INSERTAR","MOSTRAR","EXTRAER","ANEXAR","ORDENAR","OBJETOS","UNIDADES","LIMPIAR","CREAR","SALIR"};
+char *OP[]={"INSERTAR","MOSTRAR","EXTRAER","ANEXAR","ORDENAR","OBJETOS","UNIDADES","LIMPIAR","CREAR","SALIR","NUMSTIPO","NUMSORDEN","NUMSUNICO"};
 unsigned int **OPH;
 /*Función que cambia una cadena 's' con terminador '\0' a letras mayusculas*/
 void mayusculas(char *s){
@@ -36,7 +36,7 @@ int cmp(const void *a,const void *b){
     return v_a[0] - v_b[0];
 }
 /*Función hash simple*/
-unsigned int hash(unsigned char *s){
+unsigned int hash(char *s){
     int i,sum;
     for(i=0,sum=0;s[i]!='\0';i++){
         sum+=s[i];
@@ -65,7 +65,7 @@ int bb(int h,int n,int q,unsigned int **m){
 }
 /*Funcion que retorna el tipo de operación que tiene cierta palabra
  * dado su valor resultado de la función hash()*/
-int busc_op(unsigned char *s,unsigned int **tab){
+int busc_op(char *s,unsigned int **tab){
     mayusculas(s);
     int h = hash(s);
     int p = bb(h,0,**(tab-1)-1,tab);
@@ -115,7 +115,7 @@ void nuevo_reg(unsigned int hash,unsigned int op,unsigned int **t){
  * definiciones básicas contenidas en OPH*/
 unsigned int **ingr_regs(FILE *f,unsigned int op,unsigned int **tab){
     char c;int i=0;
-    unsigned char *buff = (unsigned char *)calloc(BUFF_C,sizeof(char));
+    char *buff = (char *)calloc(BUFF_C,sizeof(char));
     while((buff[i++]=fgetc(f))!='}' && i < BUFF_C){
         if(buff[i-1]=='\n')
             i--;
@@ -134,7 +134,7 @@ unsigned int **ingr_regs(FILE *f,unsigned int op,unsigned int **tab){
 }
 /*Combina las definiciones globales de OPH con las resultantes en el
  * archivo de configuración*/
-void combinar_conf(unsigned int **oph,unsigned int **conf){
+unsigned int **combinar_conf(unsigned int **oph,unsigned int **conf){
     int i,j;
     i=**conf;
     j = **(oph-1)+i;
@@ -145,6 +145,7 @@ void combinar_conf(unsigned int **oph,unsigned int **conf){
         conf[i-1][1] = oph[j-i][1];
     }
     **conf = j-1;
+    return conf+1;
 }
 /*Función quee agrega las registros de archivo 'conf' al arreglo
  * global OPH*/
@@ -171,8 +172,7 @@ unsigned int **tab_conf(FILE *f,unsigned int **tab_base){
                 memset(buff,0,BUFF_C*sizeof(*buff));
             }
         }
-    combinar_conf(OPH,tab_temp);
-    tab_temp = tab_temp+1;
+    tab_temp = combinar_conf(OPH,tab_temp);
     //Al final hay que ordenar todos los registros de la matriz
     qsort(tab_temp,tab_temp[-1][0],sizeof(tab_temp[0]),cmp);
     return tab_temp;

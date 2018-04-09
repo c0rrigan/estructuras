@@ -1,9 +1,10 @@
 #include <cstdio>
-#include <cstring>
 #include <cstdlib>
-using namespace std;
 #include "nodo.h"
+#include <cstring>
+#include "../utils/cadenas.h"
 #include "lista.h"
+using namespace std;
 //Nodo::Nodo(char *s){val = s;rel = NULL;}
 //Lista::Lista(){cabeza=NULL;aux=NULL;aux2=NULL;}
 
@@ -53,22 +54,36 @@ char *Lista::mostrar(){
         return cabeza->val;
     }
 }
+/*Ordena de menor a mayor(0)
+ *Ordena de mayor a menor(1)*/
+void Lista::ordenar(int modo){
+    char* temp;
+    int s,t,comp;
+    for(s=tam()-1;s>0;s--){
+        aux=cabeza;
+        for(t=s;t>0;t--){
+            aux2=aux->rel;
+            comp = (modo)?!comparaTodo(aux->val,aux2->val):comparaTodo(aux->val,aux2->val);
+            if(comp){
+                temp=aux2->val;
+                aux2->val=aux->val;
+                aux->val=temp;
+            }
+            aux=aux->rel;
+        }
+    }
+}
 //int main(){
 //    Lista l;
-//    l.extraer();
-//    l.mostrar();
-//    l.insertar("nortec");
-//    l.mostrar();
-//    l.insertar("revolución");
-//    l.insertar("consciencia");
-//    printf("tamaño:%d\n",l.tam());
+//    l.insertar("18");
+//    l.insertar("1");
+//    l.insertar("120");
+//    l.insertar("192.0e2");
+//    l.insertar("ab");
+//    l.insertar("ac");
 //    l.mostrarTodo();
-//    l.mostrar();
-//    l.extraer();
-//    l.extraer();
-//    l.extraer();
-//    l.extraer();
-//    printf("tamaño:%d\n",l.tam());
+//    l.ordenar(1);
+//    l.mostrarTodo();
 //}
 //considerar caso con cabeza=NULL
 //-----Pendiente de adaptación para soporte de caracteres
@@ -89,19 +104,4 @@ char *Lista::mostrar(){
 //    }
 //    aux2->rel=aux->rel;
 //    aux->rel=aux2;
-//}
-//void Lista::ordenar(){
-//    int temp,s,t;
-//    for(s=tam()-1;s>0;s--){
-//        aux=cabeza;
-//        for(t=s;t>0;t--){
-//            aux2=aux->rel;
-//            if(aux->val>aux2->val){
-//                temp=aux2->val;
-//                aux2->val=aux->val;
-//                aux->val=temp;
-//            }
-//            aux=aux->rel;
-//        }
-//    }
 //}
