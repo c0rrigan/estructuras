@@ -1,6 +1,11 @@
 INSERTAR{INTRODUCIR,AGREGAR,ingresar}
-MOSTRAR{enseñar,muestra}
-EXTRAER{sacar,quitar,eliminar}
+MOSTRAR{selecciona,seleccionar,enseñar,muestra}
+EXTRAER{sacar,quitar}
 LIMPIAR{clear,clean,lavar}
 OBJETOS{lista,pila,cola}
 UNIDADES{números,numeros}
+SALIR{salir,q}
+NUMSTIPO{pares,impares}
+NUMSORDEN{aleatorios,consecutivos}
+NUMSUNICO{unicos}
+BORRAR{borrar,eliminar,borra}

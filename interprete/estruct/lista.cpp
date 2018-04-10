@@ -26,6 +26,18 @@ int Lista::tam(){
     for(i=0;aux!=NULL;i++,aux=aux->rel);
     return i;
 }
+//par(2),impar 1
+void Lista::mostrarTipo(int tipo){
+    printf("Mostrar Tipo\n");
+    aux = cabeza;
+    int temp,mod = 2-tipo;
+    while(aux!=NULL){
+        temp = atoi(aux->val);
+        if(temp%2==mod)
+            printf("\t-%s\n",aux->val);
+        aux = aux->rel;
+    }
+}
 void Lista::mostrarTodo(){
     printf("Mostrar Todo\n");
     aux = cabeza;

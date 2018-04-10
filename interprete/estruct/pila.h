@@ -6,7 +6,7 @@ class Pila{
         Nodo *aux;
         Nodo *pos;
     Pila(){
-        pos=new(Nodo); 
+        pos=new Nodo(); 
         pos->rel=pos;
     }
     void insertar(char*);

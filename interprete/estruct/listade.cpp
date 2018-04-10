@@ -1,3 +1,4 @@
+#include <cstring>
 #include <cstdio>
 #include "../utils/cadenas.h"
 class NodoD{
@@ -19,6 +20,8 @@ class ListaDoble{
         void mostrarTodo();
         int tam();
         void ordenar(int);
+        void buscar(char*);
+        void borrar(char*);
         ListaDoble(){cabeza=NULL;}
 };
 int ListaDoble::tam(){
@@ -50,7 +53,7 @@ void ListaDoble::insertar(char *s){
     printf("Insertar:%s\n",s);
     aux = new NodoD(s);
     if(cabeza==NULL){
-        cabeza = new NodoD(s);
+        cabeza = aux;
         return;
     }
     aux2 = cabeza;
@@ -92,21 +95,66 @@ void ListaDoble::mostrarTodo(){
     }
     printf("Mostrar:%s\n",aux->val);
 }
-//int main(){
-//    ListaDoble ld;
-//    ld.insertar("este");
-//    ld.insertar("este otro");
-//    ld.insertar("este también");
-//    ld.insertar("1234");
-//    ld.insertar("90.2");
-//    ld.insertar("9e6");
-//    printf("%d\n",ld.tam());
-//    ld.mostrarTodo();
-//    printf("orden mayor a menor");
-//    ld.ordenar(1);
-//    ld.mostrarTodo();
-//    printf("orden menor a mayor");
-//    ld.ordenar(0);
-//    ld.mostrarTodo();
-//    return 0;
-//}
+void ListaDoble::buscar(char *s){
+    if(cabeza==NULL){
+        printf("No hay estructuras\n");
+    }
+    aux = cabeza;
+    while(aux->sig!=NULL){
+        if(strcmp(s,aux->val)==0)
+            printf("encontrado\n");
+        aux = aux->sig;
+    }
+    if(strcmp(s,aux->val)==0)
+        printf("encontrado en el final\n");
+}
+void ListaDoble::borrar(char *s){
+    if(cabeza==NULL){
+        printf("No hay estructuras\n");
+    }
+    aux = cabeza;
+    if(strcmp(s,cabeza->val)==0){
+        cabeza = cabeza->sig;
+        delete(aux);
+        return;
+    }
+    while(aux->sig->sig!=NULL){
+        if(strcmp(s,aux->sig->val)==0){
+            aux2 = aux->sig;
+            aux->sig = aux->sig->sig;
+            delete(aux2);
+            return;
+        }else{
+            aux = aux->sig;
+        }
+    }
+    if(strcmp(s,aux->sig->val)==0){
+        aux2 = aux->sig;
+        aux->sig = aux->sig->sig;
+        delete(aux2);
+        return;
+    }
+}
+    int main(){
+        ListaDoble ld;
+        ld.insertar("1234");
+        ld.insertar("90.2");
+        ld.insertar("9e6");
+        printf("%d\n",ld.tam());
+        ld.mostrarTodo();
+        printf("orden mayor a menor");
+        ld.ordenar(1);
+        ld.mostrarTodo();
+        printf("orden menor a mayor");
+        ld.ordenar(0);
+        ld.mostrarTodo();
+        ld.borrar("9e6");
+        //printf("Mostrar todo\n");
+        //ld.mostrarTodo();
+        ld.borrar("1234");
+        //printf("Mostrar todo\n");
+        //ld.mostrarTodo();
+        ld.borrar("90.2");
+        ld.mostrarTodo();
+        return 0;
+    }

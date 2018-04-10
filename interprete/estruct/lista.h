@@ -14,5 +14,6 @@ class Lista{
         //void insOrd(int);
         void mostrarTodo();
         int tam();
+        void mostrarTipo(int);
 };
 #endif

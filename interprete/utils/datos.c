@@ -11,7 +11,7 @@
  * ORDENAR : 523
  * ANEXAR : 447
  */
-char *OP[]={"INSERTAR","MOSTRAR","EXTRAER","ANEXAR","ORDENAR","OBJETOS","UNIDADES","LIMPIAR","CREAR","SALIR","NUMSTIPO","NUMSORDEN","NUMSUNICO"};
+char *OP[]={"INSERTAR","MOSTRAR","EXTRAER","ANEXAR","ORDENAR","OBJETOS","UNIDADES","LIMPIAR","CREAR","SALIR","NUMSTIPO","NUMSORDEN","NUMSUNICO","BORRAR"};
 unsigned int **OPH;
 /*Función que cambia una cadena 's' con terminador '\0' a letras mayusculas*/
 void mayusculas(char *s){

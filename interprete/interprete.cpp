@@ -8,7 +8,8 @@ extern "C"{
 }
 #define BUFF_C 16
 #define BUFF_LINEA 120
-enum {INSERTAR,MOSTRAR,EXTRAER,ANEXAR,ORDENAR,OBJETOS,UNIDADES,LIMPIAR,CREAR,SALIR} OP_ID;
+enum {INSERTAR,MOSTRAR,EXTRAER,ANEXAR,ORDENAR,OBJETOS,UNIDADES,LIMPIAR,CREAR,SALIR,NUMSTIPO,NUMSORDEN,NUMSUNICO,BORRAR} OP_ID;
+enum {LISTA=1,PILA,COLA,LDL} estructuras;
 using namespace std;
 /*Generar arreglo de enteros 'n' enteros con el tamaño en *(n-1)*/
 char **n_arr(int n){
@@ -133,15 +134,15 @@ int asig_ins(char **args,int in){
                 int obj = busc_obj(args);
                 if(obj&&id_o)
                     printf("insert simple obj:%d, id_o:%d\n",obj,id_o);
-                    insertar_simple(args,obj,id_o);
+                insertar_simple(args,obj,id_o);
                 break;
             }
         }
     }
 }
-int asig_ins(char *,char **s){
-
-}
+//int asig_ins(char *,char **s){
+//
+//}
 int insertar(char **s){
     printf("func:%s\n",*s);
     int i,temp = 0;
@@ -163,23 +164,6 @@ int insertar(char **s){
         }
     }
 }
-int mostrar_tipo(int obj,int id_obj,int tipo){
-    int temp;
-    char *s;
-    if(tipo){
-        while((s = extraer(obj,id_obj))!=NULL){
-            temp = atoi(s);
-            if(temp%2==0)
-                printf("%d\n",temp);
-        }
-    }else{
-        while((s = extraer(obj,id_obj))!=NULL){
-            temp = atoi(s);
-            if(temp%2==1)
-                printf("%d\n",temp);
-        }
-    }
-}
 int mostrar(char **args){
     int id_o = rem_nums(args[**(args-1)-1]);
     int obj = busc_obj(args);
@@ -190,11 +174,11 @@ int mostrar(char **args){
         }
     }else{
         int n;
-        int tipo = 0;//por impar(0),par(1)
+        int tipo = 1;//por impar(1),par(2)
         for(n = 0; n < **(args-1)-1;n++){
             mayusculas(args[n]);
             if(strcmp(args[n],"PARES")==0){
-                tipo = 1;
+                tipo = 2;
                 break;
             }
         }
@@ -229,12 +213,12 @@ int ordenar(char **args){
         for(i = 1;i < **(args-1)-1;i++){
             mayusculas(args[i]);
             if(strcmp(args[i],"MAYOR") == 0)
-                orden[j++] = 3;
-            if(strcmp(args[i],"MENOR") == 0)
                 orden[j++] = 2;
+            if(strcmp(args[i],"MENOR") == 0)
+                orden[j++] = 1;
         }
         if(orden[0] && orden[1] && orden[0]!=orden[1])
-            printf("imprimir de %d a %d obj:%d,id:%d\n",orden[0],orden[1],obj,id_o);
+            ordenar(obj,id_o,(orden[0]>orden[1])?0:1);
     }
 }
 int extraer(char **args){
@@ -251,26 +235,53 @@ int crear(char **args){
     int obj = busc_obj(args);
     if(obj){
         printf("Crear:%d\n",obj);
-        nuevo_obj(obj);
+        nuevo_obj(obj,id_o);
     }
 }
-void asignar(char **s){
-    int n = busc_op(s[0],OPH);
+int borrar(char **args){
+    printf("func:%s\n",*args);
+    int i,id_o,obj,tipo = 0;
+    id_o = rem_nums(args[**(args-1)-1]);
+    obj = busc_obj(args);
+    for(i = 1;i < **(args-1);i++){
+        //Insertar n ...
+        if(esnum(args[i])){
+            printf("eliminar %s obj:%d,id:%d\n",args[i],obj,id_o);
+            //asig_ins(args,i);
+            return 0;
+        }else{
+            mayusculas(args[i]);
+            if(strcmp(args[i],"PARES")==0){
+                tipo = 1;
+                break;
+            }
+            if(strcmp(args[i],"IMPARES")==0){
+                tipo = 1;
+                break;
+            }
+        }
+    }
+    printf("eliminar %d obj:%d,id:%d\n",tipo,obj,id_o);
+}
+void asignar(char **args){
+    int n = busc_op(args[0],OPH);
     printf("%d\n",n);
     switch(n){
-        case INSERTAR: insertar(s); break;
-        case MOSTRAR: mostrar(s); break;
-        case EXTRAER: extraer(s); break;
-        case ANEXAR: anexar(s); break;
-        case ORDENAR: ordenar(s); break;
-        case CREAR: crear(s); break;
-        case LIMPIAR: printf("%s\n",s[0]); break;
+        case INSERTAR: insertar(args); break;
+        case MOSTRAR: mostrar(args); break;
+        case EXTRAER: extraer(args); break;
+        case ANEXAR: anexar(args); break;
+        case ORDENAR: ordenar(args); break;
+        case CREAR: crear(args); break;
+        case LIMPIAR: printf("%s\n",args[0]); break;
         case SALIR: exit(0); break;
+        case BORRAR: borrar(args); break;
     }
 }
 
 int main(){
     cargar_datos();
+    //demostrar();
     char buff[BUFF_LINEA];
     for(;;){
         fgets(buff,BUFF_LINEA,stdin);
