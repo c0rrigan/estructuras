@@ -5,70 +5,20 @@
 #include "pila.h"
 #include "lista.h"
 #include "cola.h"
-class NodoEstr{
-    public:
-        void *val;
-        int id_obj;
-        int t_obj;
-        NodoEstr *ant;
-        NodoEstr *sig;
-        NodoEstr(){val=NULL;id_obj = 0;t_obj = 0;ant=NULL;sig=NULL;}
-        NodoEstr(void* o,int tipo,int id){
-            val = o;t_obj = tipo; id_obj = id;ant=NULL;sig=NULL;}
-};
-class ListaEstr{
-    public:
-        NodoEstr *cabeza;
-        NodoEstr *aux;
-        NodoEstr *aux2;
-        void insertar(void*,int,int);
-        void *buscar(int,int);
-        ListaEstr(){cabeza=NULL;aux=NULL;aux2=NULL;}
-};
+#include "listaestr.h"
 ListaEstr l;
 using namespace std;
 enum {LISTA=1,PILA,COLA,LDL} estructuras;
-vector<Lista*> listas;
-vector<Pila*> pilas;
-vector<Cola*> colas;
-void demostrar(){
-    l.insertar(new Lista(),LISTA,1);
-    void *tmp = l.buscar(LISTA,1);
-    ((Lista*)(tmp))->mostrarTodo();
-    Pila *p = new Pila();
-    p->mostrar();
-    l.insertar(p,PILA,1);
-    tmp = l.buscar(PILA,1);
-    ((Pila*)(tmp))->mostrar();
-}
-void ListaEstr::insertar(void *o,int tipo,int id){
-    aux = new NodoEstr(o,tipo,id);
-    if(cabeza == NULL){
-        cabeza = aux;
-        return;
-    }
-    aux2 = cabeza;
-    while(aux2->sig!=NULL)
-        aux2 = aux2->sig;
-    aux2->sig = aux;
-    aux->ant = aux2;
-}
-void *ListaEstr::buscar(int tipo,int id){
-    if(cabeza==NULL){
-        printf("No hay estructuras\n");
-        return NULL;
-    }
-    if(cabeza->id_obj == id && cabeza->t_obj == tipo)
-        return cabeza->val;
-    aux = cabeza->sig;
-    while(aux->sig!=NULL){
-        if(aux->id_obj == id && aux->t_obj == tipo)
-            return aux->val;
-        aux = aux->sig;
-    }
-    if(aux->id_obj == id && aux->t_obj == tipo)
-        return aux->val;
-    return NULL;
+enum {FINAL=1,MITAD,INICIO} pos;
+void *verificar(int obj,int id){
+    void *temp = NULL;
+    if(obj == LISTA)
+        temp = l.buscar(LDL,id);
+    if(obj == LDL)
+        temp = l.buscar(LISTA,id);
+    if(temp)
+        printf("Lista ya existe con diferente configuración\n");
+    return temp;
 }
 int nuevo_obj(int obj,int id){
     switch(obj){
@@ -83,10 +33,18 @@ int nuevo_obj(int obj,int id){
                   }
                   break;
         case LISTA:{
-                       l.insertar(new Lista(),LISTA,id);
-                       printf("Lista #%d creada\n",id);
+                       if(!verificar(obj,id)){
+                           l.insertar(new Lista(),LISTA,id);
+                           printf("Lista #%d creada\n",id);
+                       }
                    }
                    break;
+        case LDL:{
+                     if(!verificar(obj,id)){
+                         //l.insertar(new Lista(),LISTA,id);
+                         printf("Lista #%d creada\n",id);
+                     }
+                 }
     }
 }
 char *extraer(int obj,int id_obj){
@@ -100,14 +58,14 @@ char *extraer(int obj,int id_obj){
                     break;
     }
 }
-char *mostrar(int obj,int id_obj){
+void mostrar(int obj,int id_obj){
     void *temp = l.buscar(obj,id_obj);
     switch(obj){
-        case PILA: return ((Pila*)(temp))->mostrar();
+        case PILA: ((Pila*)(temp))->mostrar();
                    break;
-        case COLA: return ((Cola*)(temp))->mostrar();
+        case COLA: ((Cola*)(temp))->mostrar();
                    break;
-        case LISTA:((Lista*)(temp))->mostrarTodo();return NULL;
+        case LISTA:((Lista*)(temp))->mostrarTodo();
                    break;
     }
 }
@@ -115,6 +73,9 @@ int insertar(int obj,int id_obj,char *s){
     void *temp = l.buscar(obj,id_obj);
     //No existe el objeto
     if(temp == NULL){
+        if(obj == LISTA || obj == LDL)
+            if(verificar(obj,id_obj))
+                return 0;
         nuevo_obj(obj,id_obj);
         temp = l.buscar(obj,id_obj);
     }
@@ -158,21 +119,33 @@ int mostrar_tipo(int obj,int id_obj,int tipo){
         //case PILA: return ((Pila*)(temp))->mostrar();
         //           break;
         //case COLA: return ((Cola*)(temp))->mostrar();
-                   break;
+        break;
         case LISTA:((Lista*)(temp))->mostrarTipo(tipo);
                    break;
     }
 }
-int borrar(int obj,int id_obj){
-    switch(obj){
-        case PILA: pilas.erase(pilas.begin()+id_obj-1);
-                   break;
-        case COLA: colas.erase(colas.begin()+id_obj-1);
-                   break;
-        case LISTA: listas.erase(listas.begin()+id_obj-1);
+//insertar t1 en t2 según pos
+int insertar_objs(int t_obj1,int id_obj1,int t_obj2,int id_obj2,int pos){
+    void *temp = l.buscar(t_obj2,id_obj2);
+    switch(t_obj1){
+        case LISTA: printf("tam:%d\n",((Lista*)(temp))->tam());
                     break;
     }
 }
+void demostrar(){
+    insertar(LISTA,1,"snk");
+    insertar(LDL,1,"snk");
+}
+//int borrar(int obj,int id_obj){
+//    switch(obj){
+//        case PILA: pilas.erase(pilas.begin()+id_obj-1);
+//                   break;
+//        case COLA: colas.erase(colas.begin()+id_obj-1);
+//                   break;
+//        case LISTA: listas.erase(listas.begin()+id_obj-1);
+//                    break;
+//    }
+//}
 /*Ordena de menor a mayor(0)
  *Ordena de mayor a menor(1)*/
 int ordenar(int obj,int id_obj,int orden){
@@ -181,7 +154,7 @@ int ordenar(int obj,int id_obj,int orden){
         //case PILA: return ((Pila*)(temp))->mostrar();
         //           break;
         //case COLA: return ((Cola*)(temp))->mostrar();
-                   break;
+        break;
         case LISTA:((Lista*)(temp))->ordenar(orden);
                    break;
     }

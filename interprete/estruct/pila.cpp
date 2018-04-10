@@ -30,11 +30,11 @@ char *Pila::extraer(){
         return tmp; 
     }
 }
-char *Pila::mostrar(){
+void Pila::mostrar(){
     if(pos->rel==pos){
-        return NULL;
+        printf("Pila vacia\n");
     }else{
-        return pos->val;
+        printf("\t-%s\n",pos->val);
     }
 }
 //int main(){

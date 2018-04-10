@@ -10,5 +10,6 @@ int ins_n(int,int,int,char**);
 int anexar(int,int,int,int);
 int mostrar_tipo(int,int,int);
 int ordenar(int,int,int);
+int insertar_objs(int,int,int,int,int);
 void demostrar();
 #endif

@@ -10,6 +10,7 @@ extern "C"{
 #define BUFF_LINEA 120
 enum {INSERTAR,MOSTRAR,EXTRAER,ANEXAR,ORDENAR,OBJETOS,UNIDADES,LIMPIAR,CREAR,SALIR,NUMSTIPO,NUMSORDEN,NUMSUNICO,BORRAR} OP_ID;
 enum {LISTA=1,PILA,COLA,LDL} estructuras;
+enum {FINAL=1,MITAD,INICIO} pos;
 using namespace std;
 /*Generar arreglo de enteros 'n' enteros con el tamaño en *(n-1)*/
 char **n_arr(int n){
@@ -117,12 +118,33 @@ int busc_obj(char *arg){
     }
     return obj;
 }
+int es_ldl(char **args){
+    int i;
+    for(i = 0;i < **(args-1);i++){
+        mayusculas(args[i]);
+        if(strcmp("LISTA",args[i])){
+            mayusculas(args[i]);
+            if(strcmp("DOBLEMENTE",args[i+1])){
+                mayusculas(args[i]);
+                if(strcmp("LIGADA",args[i+2])){
+                    return 1;
+                }else{
+                continue;
+                }
+            }else{
+            continue;
+            }
+        }
+    }
+    return 0;
+}
 int asig_ins(char **args,int in){
     for(in++;in < **(args-1); in++){
         //insertar n UNIDADES $mod1 $mod2 en #obj
         if(busc_op(args[in],OPH)==UNIDADES){
             int id_o = rem_nums(args[**(args-1)-1]);
             int obj = busc_obj(args);
+            obj = (es_ldl(args))?LDL:obj;
             printf("insert simple obj:%d, id_o:%d\n",obj,id_o);
             if(obj&&id_o)
                 insertar_n(args,in,obj,id_o);
@@ -140,12 +162,32 @@ int asig_ins(char **args,int in){
         }
     }
 }
-//int asig_ins(char *,char **s){
-//
-//}
+int asig_ins(int id_obj1,int t_obj1,char **args,int in){
+    int t_ins, id_obj2, t_obj2=id_obj2=t_ins= 0;
+    id_obj2 = rem_nums(args[**(args-1)-1]);
+    t_obj2 = busc_obj(args[**(args-1)-1]);
+    for(;in < **(args-1); in++){
+        mayusculas(args[in]);
+        if(strcmp(args[in],"FINAL")==0){
+            t_ins = FINAL;
+            break;
+        }
+        if(strcmp(args[in],"MITAD")==0){
+            t_ins = MITAD;
+            break;
+        }
+        if(strcmp(args[in],"INICIO")==0){
+            t_ins = INICIO;
+            break;
+        }
+    }
+    if(t_ins || id_obj2 && t_obj2){
+        insertar_objs(t_obj1,id_obj1,t_obj2,id_obj2,t_ins);//implementar en estructras.cpp
+    }
+}
 int insertar(char **s){
     printf("func:%s\n",*s);
-    int i,temp = 0;
+    int i,id_o,tipo,temp = id_o = tipo = 0;
     for(i = 1;i < **(s-1);i++){
         //Insertar n ...
         if(esnum(s[i])){
@@ -157,8 +199,9 @@ int insertar(char **s){
             //casos:
             //-insertar en la lista1 15 números aleatorios
             //-insertar lista2 en pila1
-            if(rem_nums(s[i])){
-                printf("s:%s,pos:%d\n",s[i],i);
+            if(id_o = rem_nums(s[i])){
+                if(tipo = busc_obj(s[i]))
+                    asig_ins(id_o,tipo,s,i);//printf("tipo:%d,id:%d\n",tipo,id_o,i);
                 break;
             }
         }
@@ -170,7 +213,7 @@ int mostrar(char **args){
     if(**(args-1) > 1 && **(args-1) <= 3){
         if(id_o&&obj){
             printf("mostrar obj:%d,id:%d\n",obj,id_o);
-            printf("mostrar:%s\n",mostrar(obj,id_o));
+            mostrar(obj,id_o);
         }
     }else{
         int n;
@@ -281,12 +324,12 @@ void asignar(char **args){
 
 int main(){
     cargar_datos();
-    //demostrar();
     char buff[BUFF_LINEA];
     for(;;){
         fgets(buff,BUFF_LINEA,stdin);
         asignar(partir(buff));
         memset(buff,0,BUFF_LINEA);
     }
+    //demostrar();
     return 0;
 }

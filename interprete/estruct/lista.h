@@ -8,7 +8,7 @@ class Lista{
         Nodo *aux;
         Nodo *aux2;
         void insertar(char*);
-        char *mostrar();
+        void mostrar();
         char *extraer();
         void ordenar(int);
         //void insOrd(int);

@@ -32,11 +32,11 @@ char *Cola::extraer(){
         return (char*)"No hay elementos";
     }
 }
-char *Cola::mostrar(){
+void Cola::mostrar(){
     if(salida)
-        return salida->val;
+        printf("\t%s\n",salida->val);
     else
-        return (char*)"No hay elementos";
+        printf("No hay elementos\n");
 }
 //int main(){
 //    Cola c;

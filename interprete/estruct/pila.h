@@ -11,6 +11,6 @@ class Pila{
     }
     void insertar(char*);
     char *extraer();
-    char *mostrar();
+    void mostrar();
 };
 #endif

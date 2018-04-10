@@ -59,11 +59,11 @@ char *Lista::extraer(){
         return tmp;
     }
 }
-char *Lista::mostrar(){
+void Lista::mostrar(){
     if(!cabeza){
-        return NULL;
+        printf("Lista vacia");
     }else{
-        return cabeza->val;
+        printf("\t-%s\n",cabeza->val);
     }
 }
 /*Ordena de menor a mayor(0)
