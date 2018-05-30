@@ -1,6 +1,5 @@
 #ifndef COLA_H
 #define COLA_H
-#include "nodo.h"
 class Cola{
     public:
     Cola(){
@@ -8,11 +7,11 @@ class Cola{
         salida=NULL;
         aux=NULL;
     }
-        Nodo *entrada;
-        Nodo *salida;
-        Nodo *aux;
-        void insertar(char*);
-        char *extraer();
+        NodoCola *entrada;
+        NodoCola *salida;
+        NodoCola *aux;
+        void insertar(Nodo*);
+        Nodo *extraer();
         void mostrar();
 };
 #endif

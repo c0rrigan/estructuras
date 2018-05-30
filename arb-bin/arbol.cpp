@@ -1,19 +1,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
-
-class Nodo{
-    public:
-        int valor;
-        Nodo *izq;
-        Nodo *der;
-        Nodo(int num){
-            valor = num;
-            izq = NULL;
-            der = NULL;
-        }
-};
-
+#include "nodo.h"
+#include "nodocola.h"
+#include "cola.h"
 class ArbolBinario{
     void ins(Nodo*,Nodo*);
     public:
@@ -22,6 +12,7 @@ class ArbolBinario{
         void inOrden(Nodo *n);
         void preOrden(Nodo *n);
         void postOrden(Nodo *n);
+        void niveles();
         ArbolBinario(){
             raiz = NULL;
         }
@@ -82,6 +73,19 @@ void ArbolBinario::postOrden(Nodo *n){
     postOrden(n->der);
     printf("%d,",n->valor);
 }
+//Función de recorrido por niveles
+void ArbolBinario::niveles(){
+    Cola c;
+    Nodo *aux;
+    c.insertar(raiz);
+    while((aux = c.extraer())){
+        cout << aux->valor << ",";
+        if(aux->izq)
+            c.insertar(aux->izq);
+        if(aux->der)
+            c.insertar(aux->der);
+    }
+}
 int main(){
     ArbolBinario ab;
     int num = 0;
@@ -97,6 +101,8 @@ int main(){
     ab.inOrden(ab.raiz);
     cout << "\nPost Orden:" << endl;
     ab.postOrden(ab.raiz);
-    cout << "\n" << endl;
+    cout << "\nNiveles:" << endl;
+    ab.niveles();
+    cout << endl;
     return 0;
 }
