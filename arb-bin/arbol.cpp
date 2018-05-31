@@ -86,16 +86,9 @@ void ArbolBinario::niveles(){
             c.insertar(aux->der);
     }
 }
-int main(){
-    ArbolBinario ab;
-    int num = 0;
-    for(;;){
-        cin >> num;
-        if(num == -1)
-            break;
-        ab.insertar(num);
-    }
-    cout << "Pre Orden:" << endl;
+void imprimirArbol(ArbolBinario ab){
+    cout << "Recorridos:";
+    cout << "\nPre Orden:" << endl;
     ab.preOrden(ab.raiz);
     cout << "\nIn Orden:" << endl;
     ab.inOrden(ab.raiz);
@@ -103,6 +96,20 @@ int main(){
     ab.postOrden(ab.raiz);
     cout << "\nNiveles:" << endl;
     ab.niveles();
-    cout << endl;
+    cout << "\n" << endl;
+}
+int main(){
+    ArbolBinario ab;
+    int num = 0;
+    cout << "Ingrese -1 para recorrer el arbol" << endl;
+    for(;;){
+        cout << "Ingresar número: ";
+        cin >> num;
+        if(num == -1){
+            imprimirArbol(ab);
+        }else{
+            ab.insertar(num);
+        }
+    }
     return 0;
 }
