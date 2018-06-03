@@ -35,16 +35,10 @@ void Arbol::niveles(){
     while((aux = c.extraer())){
         cout << aux->val << ",";
         if(aux->numHijos > 0){
-            int i = aux->numHijos;
-            int j;
+            int j,i = aux->numHijos;
             for(j = 0;j < i; j++){
                 c.insertar(aux->hijos[j]);
             }
         }
     }
-}
-
-int main(){
-    Arbol t;
-    return 0;
 }

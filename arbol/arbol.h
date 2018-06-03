@@ -4,8 +4,8 @@
 class Arbol{
     Nodo *raiz;
     Nodo *aux;
-    Pila pilaPos;
     public:
+        Pila pilaPos;
         void insertar(Nodo *);
         void regresar();
         void niveles();

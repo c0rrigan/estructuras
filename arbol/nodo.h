@@ -6,6 +6,11 @@ class Nodo{
         int numHijos;
         Nodo** hijos;
         void nuevoHijo(Nodo*);
+        Nodo(){
+            this->val = 0;
+            this->numHijos = 0;
+            this->hijos = (Nodo **)calloc(1,sizeof(Nodo**));
+        }
         Nodo(int val){
             this->val = val;
             this->numHijos = 0;
