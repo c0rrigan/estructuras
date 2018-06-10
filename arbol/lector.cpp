@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 
+#include "expr.h"
 #include "nodo.h"
 #include "pila.h"
 #include "arbol.h"
@@ -22,7 +23,7 @@ string leerCadena(FILE *f){
     char c;
     if((c = fgetc(f)) == '"'){
         while((c = fgetc(f))!='"'){
-            //Sí pasa por estos carácteres significa que 
+            //Sí pasa por estos carácteres significa que
             //posiblemente falto cerrar con comillas la variable
             if(c == ':' || c == '}' || c == '{')
                 buffer.clear();
@@ -61,7 +62,7 @@ Nodo *leerNodo(FILE *f){
     Nodo *n = new Nodo();
     //Recorrer hasta buscar la llave que abre
     while((c = fgetc(f)) != '{');
-    //Recorrer todos los carácteres hasta llegar a la 
+    //Recorrer todos los carácteres hasta llegar a la
     //llave que cierra
     while((c = fgetc(f)) != '}'){
         //Empezar a leer a partir de que empiezan las comillas
@@ -72,14 +73,14 @@ Nodo *leerNodo(FILE *f){
         }else{
             //Verificar si el valor el para el campo 'val'
             if(!buffer.compare(VAL_STRING)){
-                //Buscar los dos punto y comenzar a leer el 
+                //Buscar los dos punto y comenzar a leer el
                 //siguiente valor
                 while((c = fgetc(f)) != ':');
                 buffer = leerCadena(f);
                 if(buffer.empty())
                     errorLector();
                 else
-                    n->val = atoi(buffer.c_str()); 
+                    n->val = buffer;
             }else{
                 errorLector();
             }
@@ -96,7 +97,7 @@ Nodo *leerNodo(FILE *f){
         if(c != EOF){
             ///Buscar la cadena correspondiente a 'hijos'
             ungetc(c,f);
-            buffer = leerCadena(f); 
+            buffer = leerCadena(f);
             if(buffer.empty()){
                 errorLector();
             }else{
@@ -119,9 +120,14 @@ void errorLector(){
     cout << "ERROR - Revisar sintaxis del archivo del arbol" << endl;
     exit(EXIT_FAILURE);
 }
+//Lee el arbol almacenado en el archivo 'f'
+Arbol leerArbol(FILE *f){
+    leerNodo(f);
+    return arb;
+}
 int main(){
     FILE *f = fopen("txtfile","r");
-    leerNodo(f);
-    arb.niveles();
-    return 0;
+    Arbol a = leerArbol(f);
+    //a.niveles();
+    cout << "recorrido:" << a.recorrido() << endl;
 }

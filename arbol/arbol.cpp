@@ -1,11 +1,13 @@
 #include <cstdio>
 #include <iostream>
 #include <cstdlib>
+#include <string>
 
 #include "nodo.h"
 #include "pila.h"
 #include "cola.h"
 #include "arbol.h"
+#include "expr.h"
 
 using namespace std;
 
@@ -41,4 +43,26 @@ void Arbol::niveles(){
             }
         }
     }
+}
+//Función que inicia el recorrido y regresa 
+//un string según sea el resultado
+string Arbol::recorrido(){
+    return recorrer(this->raiz);
+}
+string Arbol::recorrer(Nodo *n){
+    if(n->numHijos == 0)
+        return n->val;
+    if(evaluarExpr(n->val)){
+        int i;
+        Nodo *aux;
+        string sAux;
+        for(i = 0; i < n->numHijos; i++){
+            aux = n->hijos[i];
+            sAux = recorrer(aux);
+            if(!sAux.empty()){
+                return sAux;
+            }
+        }
+    }
+    return ""; 
 }

@@ -2,13 +2,9 @@
 #include <iostream>
 #include <string>
 #include <queue>
-enum Operadores {PAR_I = 1,PAR_D,IGUAL,DIFERENTE,MAY,MAY_I,MEN,MEN_I,AND,OR};
-enum Tipos {NUM,OP};
+#include <stack>
 
-typedef struct Elem{
-    Tipos elemTipo;
-    int val;
-}Elem;
+#include "expr.h"
 
 using namespace std;
 //Función que regresa el identificador de cada operación
@@ -17,10 +13,6 @@ int operadores(string op){
         return PAR_I;
     if(!op.compare(")"))
         return PAR_D;
-    if(!op.compare("=="))
-        return IGUAL;
-    if(!op.compare("!="))
-        return DIFERENTE;
     if(!op.compare(">"))
         return MAY;
     if(!op.compare(">="))
@@ -29,19 +21,59 @@ int operadores(string op){
         return MEN;
     if(!op.compare("<="))
         return MEN_I;
+    if(!op.compare("=="))
+        return IGUAL;
+    if(!op.compare("!="))
+        return DIFERENTE;
     if(!op.compare("&"))
-        return MEN;
+        return AND;
     if(!op.compare("|"))
-        return MEN_I;
+        return OR;
     else
         return 0;
 }
-//Función que define el operador 
+//Función que asigna el orden de operación dependiendo
+//del código de la operación establecido en el enum
+int ordenOperacion(int op){
+    if(op == PAR_I || op == PAR_D)
+        return 5;
+    if(op == MAY || op == MAY_I || op == MEN || op == MEN_I)
+        return 4;
+    if(op == IGUAL || op == DIFERENTE)
+        return 3;
+    if(op == AND)
+        return 2;
+    if(op == OR)
+        return 1;
+    else
+        return 0;
+}
+//Función que calcula la operación con base en el ID asignado al operador
+int operar(int op,int val1,int val2){
+    switch(op){
+        case(MAY):
+            return val1 > val2;
+        case(MAY_I):
+            return val1 >= val2;
+        case(MEN):
+            return val1 < val2;
+        case(MEN_I):
+            return val1 <= val2;
+        case(IGUAL):
+            return val1 == val2;
+        case(DIFERENTE):
+            return val1 != val2;
+        case(AND):
+            return val1 && val2;
+        case(OR):
+            return val1 || val2;
+    }
+}
+//Función que define el operador
 int esOperador(string s,int *index){
     int op = 0;
     //Verificar si es un operador de un solo carácter
     if(op = operadores(s.substr(*index,1))){
-        (*index)++;
         //Ver si es un operador incluyente
         if(s.at(*index) == '='){
             (*index)++;
@@ -50,10 +82,12 @@ int esOperador(string s,int *index){
                 return MAY_I;
             if(op == MEN)
                 return MEN_I;
+        }else{
+            return op;
         }
     }else{
         if(op = operadores(s.substr(*index,2))){
-            (*index)+=2;
+            (*index)++;
             return op;
         }
     }
@@ -65,35 +99,118 @@ int esOperador(string s,int *index){
 int obtenerVariable(string s){
     int i;
     if(isalpha(s.at(0))){
-        //Buscar variable en tabla de valores 
+        //Buscar variable en tabla de valores
+        cout << "Carácteristica no implementada" << endl;
+        return 0;
     }else{
-       //Falta procesar la variable como entero 
+        //Buscar entero
+        return atoi(s.c_str());
     }
 }
 
-//Función que convierte las operaciones en 's' a notación polaca inversa
-void aNPC(string s){
-    queue<Elem> elems;  
+//Función que convierte la cadena en una cola de estructuras 'elem' con
+//tipo y valor de cada elemento(número o operador)
+queue<Elem> dividirCadena(string s){
+    queue<Elem> elems;
     string buffer;
     int i,val;
-    Elem elem;
+    char c;
     for(i = 0; i < s.length(); i++){
-        if(val = esOperador(exp,&i)){
-            elem = {.elemTipo = OP, .val = val};
+        if(val = esOperador(s,&i)){
+            if(!buffer.empty()){
+                //Revisar y vaciar el buffer
+                //cout << "Número" << obtenerVariable(buffer) << endl;
+                Elem num = {.tipo = NUM, .val = obtenerVariable(buffer)};
+                elems.push(num);
+                buffer.clear();
+            }
+            //cout << "Operador:" << val << endl;
+            Elem elem = {.tipo = OP, .val = val};
+            elems.push(elem);
         }else{
-            if(isalpha(val) || isdigit(val)){
-                buffer.append(val);
-                //Despúes hay que agregar a 'elems' según el algoritmo 
-                //http://condor.depaul.edu/ichu/csc415/notes/notes9/Infix.htm
-                //Después hay que procesar la cadena que resulte con una
-                //pila que realiza las operaciones en NPI
+            if(isalpha(s.at(i)) || isdigit(s.at(i))){
+                buffer.append(s.substr(i,1));
             }
         }
     }
+    if(!buffer.empty()){
+        //Revisar y vaciar el buffer
+        //cout << "Número" << obtenerVariable(buffer) << endl;
+        Elem num = {.tipo = NUM, .val = obtenerVariable(buffer)};
+        elems.push(num);
+        buffer.clear();
+    }
+    return elems;
 }
-int main(){
-    int i = 3;
-    string s = "el >= el chiste";
-    cout << esOperador(s,&i) << endl;
-    cout << s.substr(i) << endl;
+//Función que implementa el algoritmo Shunting-yard para pasar de notación
+//'infix' a notación 'postfix' o notación polaca inversa
+queue<Elem> aNPI(queue<Elem> elems){
+    queue<Elem> expr;
+    stack<Elem> ops;
+    Elem e;
+    //Comienza a vaciar la cola de elementos
+    while(!elems.empty()){
+        e = elems.front();
+        if(e.tipo == NUM){
+            expr.push(e);
+        }
+        if(e.tipo == OP){
+            if(ops.empty()){
+                ops.push(e);
+            }else{
+                //Si llega a un parentesis derecho, comienza a sacar operadores
+                //de 'ops' hasta llegar al parentesis izquierdo
+                if(e.val == PAR_D){
+                    while(ops.top().val != PAR_I){
+                        expr.push(ops.top());
+                        ops.pop();
+                    }
+                    ops.pop();
+                }
+                else if(e.val == PAR_I){
+                    ops.push(e);
+                }else{
+                    //Sí el operador que ingresa tiene un orden menor o igual al que esta a la
+                    //cabeza de 'ops', saca operadores hasta llegar a uno mayor
+                    while(!ops.empty() && ordenOperacion(ops.top().val) <= ordenOperacion(e.val)){
+                        expr.push(ops.top());
+                        ops.pop();
+                    }
+                    ops.push(e);
+                }
+            }
+        }
+        elems.pop();
+    }
+    while(!ops.empty()){
+        expr.push(ops.top());
+        ops.pop();
+    }
+    return expr;
+}
+int evaluar(queue<Elem> expr){
+    stack<int> res;
+    Elem e;
+    while(!expr.empty()){
+        e = expr.front();
+        int val1,val2 = val1 = 0;
+        if(e.tipo == NUM){
+            res.push(e.val);
+        }
+        if(e.tipo == OP){
+            //El primer valor es el segundo en la evaluación porque en la
+            //expresión sería el que se encontraba a la derecha
+            val2 = res.top();
+            res.pop();
+            val1 = res.top();
+            res.pop();
+            res.push(operar(e.val,val1,val2));
+        }
+        expr.pop();
+    }
+    return res.top();
+}
+int evaluarExpr(string s){
+    queue<Elem> elems = aNPI(dividirCadena(s));
+    return evaluar(elems);
 }

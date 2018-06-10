@@ -1,17 +1,18 @@
 #ifndef NODO_H
 #define NODO_H
+#include <string>
 class Nodo{
     public:
-        int val;
+        std::string val;
         int numHijos;
         Nodo** hijos;
         void nuevoHijo(Nodo*);
         Nodo(){
-            this->val = 0;
+            this->val = "";
             this->numHijos = 0;
             this->hijos = (Nodo **)calloc(1,sizeof(Nodo**));
         }
-        Nodo(int val){
+        Nodo(std::string val){
             this->val = val;
             this->numHijos = 0;
             this->hijos = (Nodo **)calloc(1,sizeof(Nodo**));
