@@ -1,10 +1,13 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include <cstring>
 #include <iostream>
 
 #include "expr.h"
+#include "arb-bin.h"
 #include "nodo.h"
+#include "nodoabin.h"
 #include "pila.h"
 #include "arbol.h"
 
@@ -115,19 +118,60 @@ Nodo *leerNodo(FILE *f){
     }
     return n;
 }
-
-void errorLector(){
-    cout << "ERROR - Revisar sintaxis del archivo del arbol" << endl;
-    exit(EXIT_FAILURE);
+//Recibe el renglón del csv con los datos de la carrera y los
+//convierte en un objeto 'Carrera'
+Carrera *crearCarrera(string s){
+    Carrera *c = new Carrera();
+    vector<string> carreras;
+    char *buffer = strtok((char*)s.c_str(),",");
+    c->nombre = buffer;
+    buffer = strtok(NULL,",");
+    c->idGrupo = atoi(buffer);
+    buffer = strtok(NULL,",");
+    while(buffer != NULL){
+        carreras.push_back(buffer);
+        buffer = strtok(NULL,",");
+    }
+    c->plant = carreras;
+    return c;
+}
+//Función que lee los grupos de escuelas encontrados
+//en los archivos 'GRUPO_FM.csv','GRUPO_MB.csv','GRUPO_SA.csv'
+//del directorio 'datos'
+ArbolBinario leerEscuelas(FILE *f,ArbolBinario *arbol){
+    string buffer;
+    char c;
+    while((c = getc(f)) != EOF){
+        if(c == '\n'){
+            arbol->insertar(crearCarrera(buffer));
+            buffer.clear();
+            continue;
+        }
+        buffer.push_back(c);
+    }
+    
 }
 //Lee el arbol almacenado en el archivo 'f'
 Arbol leerArbol(FILE *f){
     leerNodo(f);
     return arb;
 }
+void errorLecturaArchivo(string s){
+    cout << "ERROR - Revisar se el archivo" << s << "en el directorio 'datos'" << endl;
+    exit(EXIT_FAILURE);
+}
+void errorLector(){
+    cout << "ERROR - Revisar sintaxis del archivo del arbol" << endl;
+    exit(EXIT_FAILURE);
+}
+//Lee el arbol
 int main(){
-    FILE *f = fopen("txtfile","r");
-    Arbol a = leerArbol(f);
-    //a.niveles();
-    cout << "recorrido:" << a.recorrido() << endl;
+//    FILE *f = fopen("txtfile","r");
+//    Arbol a = leerArbol(f);
+//    a.niveles();
+//    cout << "recorrido:" << a.recorrido() << endl;
+FILE *f = fopen("./datos/GRUPO_FM.csv","r");
+ArbolBinario *arb = new ArbolBinario();
+leerEscuelas(f,arb);
+arb->niveles();
 }
