@@ -49,6 +49,24 @@ void ArbolBinario::ins(Carrera *nc,NABin *padre){
         }
     }
 }
+//Busca el grupo según 'idGpo', en caso de no encontrarlo
+//regresa NULL
+GpoCarreras *ArbolBinario::buscarGrupo(int idGpo){
+    return buscar(idGpo,raiz); 
+}
+//Función recursiva para buscar nodos
+GpoCarreras *ArbolBinario::buscar(int idGpo,NABin *raiz){
+    if(raiz->val->idGrupo == idGpo){
+        return raiz->val;
+    }
+    if(raiz->izq && raiz->val->idGrupo > idGpo){
+        return buscar(idGpo,raiz->izq); 
+    }
+    if(raiz->der && raiz->val->idGrupo < idGpo){
+        return buscar(idGpo,raiz->der); 
+    }
+    return NULL;
+}
 //void ArbolBinario::inOrden(NABin *n){
 //    if(n == NULL)
 //        return;
@@ -71,4 +89,3 @@ void ArbolBinario::niveles(){
             c.push(aux->der);
     }
 }
-//Falta hacer mecanismo de busqueda
