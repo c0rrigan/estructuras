@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <string>
+#include <cstring>
 
 #include "nodo.h"
 #include "pila.h"
@@ -50,9 +51,37 @@ string Arbol::recorrido(){
     return recorrer(this->raiz);
 }
 string Arbol::recorrer(Nodo *n){
+    string val = n->val;
+    char *cbuff;
+    cout << "nodo:val" << n->val << '\n';
+    cbuff = strtok((char*)n->val.c_str(),"=");
+    if(strlen(cbuff) == 2){
+        cbuff = strtok(NULL,"=");
+        val = cbuff;
+    }
     if(n->numHijos == 0)
         return n->val;
-    if(evaluarExpr(n->val)){
+    if(evaluarExpr(val)){
+        cbuff = strtok((char*)n->val.c_str(),"=");
+        if(!strcmp(cbuff,"fm")){
+            //TODO:Cuestionario fm 
+            cbuff = strtok(NULL,"=");
+            cout << "La rama que podría interesarle es:" << "Físico-matemáticas" << "\n";
+            cout << "a continuación se le haran unas preguntas para decidir que carreras le podrían gustar" << endl;
+            aplicarCuestionarioFM(); 
+        }
+        if(!strcmp(cbuff,"sa")){
+            cbuff = strtok(NULL,"=");
+            cout << "La rama que podría interesarle es:" << "Sociales-administrativas" << "\n";
+            cout << "a continuación se le haran unas preguntas para decidir que carreras le podrían gustar" << endl;
+            aplicarCuestionarioSA(); 
+        }
+        if(!strcmp(cbuff,"mb")){
+            cbuff = strtok(NULL,"=");
+            cout << "La rama que podría interesarle es:" << "Médico-biológicas" << "\n";
+            cout << "a continuación se le haran unas preguntas para decidir que carreras le podrían gustar" << endl;
+            aplicarCuestionarioMB(); 
+        }
         int i;
         Nodo *aux;
         string sAux;

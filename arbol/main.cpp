@@ -25,15 +25,20 @@ int main(){
     string buffer;
     vector <Carrera*> opciones;
     leerDatos();//Cargar datos a arboles
+    cout << "Bienvenido al cuestionario, a continuación se le presentaran algunas sentencias, responda según este de acuerdo con ellas" << endl;
     aplicarCuestionario1(); 
     buffer = arbol.recorrido();
     if(buffer.empty()){
         cout << "Error de recorrido de arbol" << endl;
         exit(EXIT_FAILURE);
     }
+    cout << "Las carreras elegidas son:" << endl;
     opciones = grupoCarreras(buffer);
     for(auto op :opciones){
         cout << op->nombre << ",";
+        cout << "Planteles:";
+        for(auto pl : op->plant)
+            cout << "\t-" << pl << '\n';
     }
 }
 //Función que regresa el grupo de carreras dado el nombre

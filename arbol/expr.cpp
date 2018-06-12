@@ -242,25 +242,31 @@ int evaluarExpr(string s){
     char *cbuff;
     queue<Elem> elems;
     cbuff = strtok((char*)s.c_str(),"=");
-    if(!strcmp(cbuff,"fm")){
-        //TODO:Cuestionario fm 
-        cbuff = strtok(NULL,"=");
-        aplicarCuestionarioFM(); 
-        elems = aNPI(dividirCadena(cbuff));
-        return evaluar(elems);
-    }
-    if(!strcmp(cbuff,"sa")){
-        cbuff = strtok(NULL,"=");
-        aplicarCuestionarioSA(); 
-        elems = aNPI(dividirCadena(cbuff));
-        return evaluar(elems);
-    }
-    if(!strcmp(cbuff,"mb")){
-        cbuff = strtok(NULL,"=");
-        aplicarCuestionarioMB(); 
-        elems = aNPI(dividirCadena(cbuff));
-        return evaluar(elems);
-    }
+    //if(!strcmp(cbuff,"fm")){
+    //    //TODO:Cuestionario fm 
+    //    cbuff = strtok(NULL,"=");
+    //    cout << "La rama que podría interesarle es:" << "Físico-matemáticas" << "\n";
+    //    cout << "a continuación se le haran unas preguntas para decidir que carreras le podrían gustar" << endl;
+    //    aplicarCuestionarioFM(); 
+    //    elems = aNPI(dividirCadena(cbuff));
+    //    return evaluar(elems);
+    //}
+    //if(!strcmp(cbuff,"sa")){
+    //    cbuff = strtok(NULL,"=");
+    //    cout << "La rama que podría interesarle es:" << "Sociales-administrativas" << "\n";
+    //    cout << "a continuación se le haran unas preguntas para decidir que carreras le podrían gustar" << endl;
+    //    aplicarCuestionarioSA(); 
+    //    elems = aNPI(dividirCadena(cbuff));
+    //    return evaluar(elems);
+    //}
+    //if(!strcmp(cbuff,"mb")){
+    //    cbuff = strtok(NULL,"=");
+    //    cout << "La rama que podría interesarle es:" << "Médico-biológicas" << "\n";
+    //    cout << "a continuación se le haran unas preguntas para decidir que carreras le podrían gustar" << endl;
+    //    aplicarCuestionarioMB(); 
+    //    elems = aNPI(dividirCadena(cbuff));
+    //    return evaluar(elems);
+    //}
     elems = aNPI(dividirCadena(s));
     return evaluar(elems);
 }
