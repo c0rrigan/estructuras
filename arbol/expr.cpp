@@ -1,12 +1,36 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <queue>
 #include <stack>
-
+#include <vector>
 #include "expr.h"
+#include "cuestionarios.h"
 
 using namespace std;
+//Definición de funciones
+void errorTablaSimbolos(string);
+
+vector<variable*> tablaSimbolos;
+//Función que agrega nuevos simbólos(variables) a la tabla de símbolos
+void agregarSimbolos(vector<variable*> &sims){
+    while(!sims.empty()){
+        tablaSimbolos.push_back(sims.back());
+        sims.pop_back();
+    }
+}
+//Función que busca en la tabla de simbolos
+int buscarSimbolo(string sim){
+    int i;
+    for(i = 0; i < tablaSimbolos.size(); i++){
+        if(!strcmp(tablaSimbolos[i]->area.c_str(),sim.c_str())){
+            return tablaSimbolos[i]->valor;
+        }
+    }
+    return -1;
+}
+
 //Función que regresa el identificador de cada operación
 int operadores(string op){
     if(!op.compare("("))
@@ -100,8 +124,12 @@ int obtenerVariable(string s){
     int i;
     if(isalpha(s.at(0))){
         //Buscar variable en tabla de valores
-        cout << "Carácteristica no implementada" << endl;
-        return 0;
+        int r;
+        if((r = buscarSimbolo(s)) != -1){
+            return r;
+        }else{
+            errorTablaSimbolos(s);
+        }
     }else{
         //Buscar entero
         return atoi(s.c_str());
@@ -211,6 +239,32 @@ int evaluar(queue<Elem> expr){
     return res.top();
 }
 int evaluarExpr(string s){
-    queue<Elem> elems = aNPI(dividirCadena(s));
+    char *cbuff;
+    queue<Elem> elems;
+    cbuff = strtok((char*)s.c_str(),"=");
+    if(!strcmp(cbuff,"fm")){
+        //TODO:Cuestionario fm 
+        cbuff = strtok(NULL,"=");
+        aplicarCuestionarioFM(); 
+        elems = aNPI(dividirCadena(cbuff));
+        return evaluar(elems);
+    }
+    if(!strcmp(cbuff,"sa")){
+        cbuff = strtok(NULL,"=");
+        aplicarCuestionarioSA(); 
+        elems = aNPI(dividirCadena(cbuff));
+        return evaluar(elems);
+    }
+    if(!strcmp(cbuff,"mb")){
+        cbuff = strtok(NULL,"=");
+        aplicarCuestionarioMB(); 
+        elems = aNPI(dividirCadena(cbuff));
+        return evaluar(elems);
+    }
+    elems = aNPI(dividirCadena(s));
     return evaluar(elems);
+}
+void errorTablaSimbolos(string s){
+    cout << "La variable " << s << "no se encuentra en el cuestionario" << endl;
+    exit(EXIT_FAILURE);
 }
