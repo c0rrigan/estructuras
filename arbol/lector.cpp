@@ -122,23 +122,25 @@ Nodo *leerNodo(FILE *f){
 //convierte en un objeto 'Carrera'
 Carrera *crearCarrera(string s){
     Carrera *c = new Carrera();
-    vector<string> carreras;
+    vector<string> plants;
     char *buffer = strtok((char*)s.c_str(),",");
     c->nombre = buffer;
     buffer = strtok(NULL,",");
     c->idGrupo = atoi(buffer);
     buffer = strtok(NULL,",");
     while(buffer != NULL){
-        carreras.push_back(buffer);
+        plants.push_back(buffer);
         buffer = strtok(NULL,",");
     }
-    c->plant = carreras;
+    c->plant = plants;
     return c;
 }
 //Función que lee los grupos de escuelas encontrados
 //en los archivos 'GRUPO_FM.csv','GRUPO_MB.csv','GRUPO_SA.csv'
-//del directorio 'datos'
-ArbolBinario leerEscuelas(FILE *f,ArbolBinario *arbol){
+//del directorio 'datos', o los definidos en las constantes de
+//'main.c'
+ArbolBinario *leerEscuelas(FILE *f){
+    ArbolBinario *arbol = new ArbolBinario();
     string buffer;
     char c;
     while((c = getc(f)) != EOF){
@@ -149,29 +151,15 @@ ArbolBinario leerEscuelas(FILE *f,ArbolBinario *arbol){
         }
         buffer.push_back(c);
     }
-    
+    return arbol;
 }
 //Lee el arbol almacenado en el archivo 'f'
 Arbol leerArbol(FILE *f){
     leerNodo(f);
     return arb;
 }
-void errorLecturaArchivo(string s){
-    cout << "ERROR - Revisar se el archivo" << s << "en el directorio 'datos'" << endl;
-    exit(EXIT_FAILURE);
-}
 void errorLector(){
     cout << "ERROR - Revisar sintaxis del archivo del arbol" << endl;
     exit(EXIT_FAILURE);
 }
 //Lee el arbol
-int main(){
-//    FILE *f = fopen("txtfile","r");
-//    Arbol a = leerArbol(f);
-//    a.niveles();
-//    cout << "recorrido:" << a.recorrido() << endl;
-FILE *f = fopen("./datos/GRUPO_FM.csv","r");
-ArbolBinario *arb = new ArbolBinario();
-leerEscuelas(f,arb);
-arb->niveles();
-}
