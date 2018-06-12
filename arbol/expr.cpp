@@ -241,7 +241,6 @@ int evaluar(queue<Elem> expr){
 int evaluarExpr(string s){
     char *cbuff;
     queue<Elem> elems;
-    cbuff = strtok((char*)s.c_str(),"=");
     //if(!strcmp(cbuff,"fm")){
     //    //TODO:Cuestionario fm 
     //    cbuff = strtok(NULL,"=");
