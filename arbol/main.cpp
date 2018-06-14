@@ -2,6 +2,7 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include <locale.h>
 #include "main.h"
 #include "pila.h"
 #include "nodoabin.h"
@@ -22,23 +23,29 @@ vector<Carrera*> grupoCarreras(string);
 
 //Función que lee el arbol y los datos de las escuelas
 int main(){
+    //Línea para mostrar acentos
+    setlocale(LC_ALL,"spanish");
     string buffer;
     vector <Carrera*> opciones;
     leerDatos();//Cargar datos a arboles
-    cout << "Bienvenido al cuestionario, a continuación se le presentaran algunas sentencias, responda según este de acuerdo con ellas" << endl;
-    aplicarCuestionario1(); 
-    buffer = arbol.recorrido();
-    if(buffer.empty()){
-        cout << "Error de recorrido de arbol" << endl;
-        exit(EXIT_FAILURE);
-    }
-    cout << "Las carreras elegidas son:" << endl;
-    opciones = grupoCarreras(buffer);
-    for(auto op :opciones){
-        cout << op->nombre << ",";
-        cout << "Planteles:";
-        for(auto pl : op->plant)
-            cout << "\t-" << pl << '\n';
+    int op = 1;
+    while(op != 0){
+        aplicarCuestionario1(); 
+        buffer = arbol.recorrido();
+        if(buffer.empty()){
+            cout << "Error de recorrido de arbol" << endl;
+            exit(EXIT_FAILURE);
+        }
+        cout << "Las carreras sugeridas son:\n" << endl;
+        opciones = grupoCarreras(buffer);
+        for(auto op :opciones){
+            cout << "\t-" << op->nombre << "\n";
+            cout << "\tPlanteles:\n";
+            for(auto pl : op->plant)
+                cout << "\t\t-" << pl << '\n';
+        }
+        cout << "¿Volver a realizar?\n\t1)SI\n\t0)NO\n";
+        cin >> op;
     }
 }
 //Función que regresa el grupo de carreras dado el nombre

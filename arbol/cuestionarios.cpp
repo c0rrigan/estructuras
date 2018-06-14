@@ -43,9 +43,9 @@ vector<variable*> aplicarCuestionario(FILE *archivo){
         apu = strtok(renglon, ",");
 
         printf("\n%s \n", apu);
-        printf( "\t1. No Me Gusta\n"
-                "\t2. Me es Indiferentes\n"
-                "\t3. Me Gusta\n"
+        printf( "\t1. No me gusta\n"
+                "\t2. Me es indiferente\n"
+                "\t3. Me gusta\n"
                 "\tOpcion: ");
 
         apu = strtok(NULL, ",");
@@ -61,21 +61,15 @@ vector<variable*> aplicarCuestionario(FILE *archivo){
         apu[strcspn(apu, "\r")] = 0;
 
         switch(opc){
-
             case 1:
                 insertarVar(apu,ng,vars);//lista_areas.insertar_a(apu, ng);
                 break;
-
-
             case 2:
                 insertarVar(apu,mi,vars);//lista_areas.insertar_a(apu, mi);
                 break;
-
-
             case 3:
                 insertarVar(apu,mg,vars);//lista_areas.insertar_a(apu, mg);
                 break;
-
         }
 
     }
@@ -86,6 +80,8 @@ void aplicarCuestionario1(){
     FILE *f = fopen(CUEST_AREAS_DIR.c_str(),"r");
     if(!f)
         errorAbrirCuestionario(CUEST_AREAS_DIR);
+    cout <<"Y,¿Ahora para donde? v.1 \n\nBienvenido al cuestionario:\n";
+    cout << "A continuación se le presentaran algunas sentencias, responda según este de acuerdo con ellas" << endl;
     vars = aplicarCuestionario(f);
     agregarSimbolos(vars);
 }
@@ -94,6 +90,8 @@ void aplicarCuestionarioFM(){
     FILE *f = fopen(CUEST_FM_DIR.c_str(),"r");
     if(!f)
         errorAbrirCuestionario(CUEST_FM_DIR);
+    cout << "La rama que podría interesarle es:" << "Físico-matemáticas" << "\n";
+    cout << "a continuación se le haran unas preguntas para decidir que carreras le podrían gustar" << endl;
     vars = aplicarCuestionario(f);
     agregarSimbolos(vars);
 }
@@ -102,11 +100,15 @@ void aplicarCuestionarioSA(){
     FILE *f = fopen(CUEST_SA_DIR.c_str(),"r");
     if(!f)
         errorAbrirCuestionario(CUEST_SA_DIR);
+    cout << "La rama que podría interesarle es:" << "Sociales-administrativas" << "\n";
+    cout << "a continuación se le haran unas preguntas para decidir que carreras le podrían gustar" << endl;
     vars = aplicarCuestionario(f);
     agregarSimbolos(vars);
 }
 void aplicarCuestionarioMB(){
     vector<variable*> vars;
+    cout << "La rama que podría interesarle es:" << "Médico-biológicas" << "\n";
+    cout << "a continuación se le haran unas preguntas para decidir que carreras le podrían gustar" << endl;
     FILE *f = fopen(CUEST_MB_DIR.c_str(),"r");
     if(!f)
         errorAbrirCuestionario(CUEST_AREAS_DIR);

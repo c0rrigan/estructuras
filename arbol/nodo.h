@@ -1,6 +1,7 @@
 #ifndef NODO_H
 #define NODO_H
 #include <string>
+#include <cstdlib>
 class Nodo{
     public:
         std::string val;
@@ -10,12 +11,12 @@ class Nodo{
         Nodo(){
             this->val = "";
             this->numHijos = 0;
-            this->hijos = (Nodo **)calloc(1,sizeof(Nodo**));
+            this->hijos = (Nodo **)std::calloc(1,sizeof(Nodo**));
         }
         Nodo(std::string val){
             this->val = val;
             this->numHijos = 0;
-            this->hijos = (Nodo **)calloc(1,sizeof(Nodo**));
+            this->hijos = (Nodo **)std::calloc(1,sizeof(Nodo**));
         }
 };
 #endif
