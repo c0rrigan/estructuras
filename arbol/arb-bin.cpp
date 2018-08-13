@@ -67,13 +67,6 @@ GpoCarreras *ArbolBinario::buscar(int idGpo,NABin *raiz){
     }
     return NULL;
 }
-//void ArbolBinario::inOrden(NABin *n){
-//    if(n == NULL)
-//        return;
-//    inOrden(n->izq);
-//    cout << n->nombre << endl;
-//    inOrden(n->der);
-//}
 //Función de recorrido por niveles
 void ArbolBinario::niveles(){
     stack<NABin*> c;

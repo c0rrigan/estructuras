@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <string>
+#include <cstring>
 
 #include "nodo.h"
 #include "pila.h"
@@ -50,9 +51,29 @@ string Arbol::recorrido(){
     return recorrer(this->raiz);
 }
 string Arbol::recorrer(Nodo *n){
+    string val = n->val;
+    char *cbuff;
+    cbuff = strtok((char*)n->val.c_str(),"=");
+    if(strlen(cbuff) == 2){
+        cbuff = strtok(NULL,"=");
+        val = cbuff;
+    }
     if(n->numHijos == 0)
         return n->val;
-    if(evaluarExpr(n->val)){
+    if(evaluarExpr(val)){
+        cbuff = strtok((char*)n->val.c_str(),"=");
+        if(cbuff && !strcmp(cbuff,"fm")){
+            cbuff = strtok(NULL,"=");
+            aplicarCuestionarioFM(); 
+        }
+        if(cbuff && !strcmp(cbuff,"sa")){
+            cbuff = strtok(NULL,"=");
+            aplicarCuestionarioSA(); 
+        }
+        if(cbuff && !strcmp(cbuff,"mb")){
+            cbuff = strtok(NULL,"=");
+            aplicarCuestionarioMB(); 
+        }
         int i;
         Nodo *aux;
         string sAux;
